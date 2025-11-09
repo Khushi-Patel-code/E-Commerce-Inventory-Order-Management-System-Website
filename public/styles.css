@@ -1,0 +1,7 @@
+body { font-family: Arial, sans-serif; padding: 24px; background:#f8f9fb; color:#222; }
+header h1 { margin:0 0 16px 0; font-size:20px; }
+button { padding:8px 12px; cursor:pointer; }
+#status { margin-top:10px; font-size:14px; color:#444; }
+table { border-collapse:collapse; background:#fff; }
+th, td { padding:8px 10px; text-align:left; }
+thead th { background:#eef2f7; }
