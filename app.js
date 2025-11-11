@@ -1,12 +1,23 @@
 // app.js
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
 
-const pool = require('./db/connection'); // your DB pool
-const productsRouter = require('./routes/products'); // products route
-
 const app = express();
+
+const pool = require('./db/connection'); // your DB pool
+
+app.use(cors());
+
+const productsRouter = require('./routes/products'); // products route
+const adminRoutes = require('./routes/admin');
+const authRoutes = require('./routes/auth');
+const customerRoutes = require('./routes/customers');
+
+
+
+app.use(express.static('public'));
 
 // Middleware
 app.use(express.json());
@@ -17,6 +28,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // API routes
 app.use('/api/products', productsRouter);
+app.use('/auth', authRoutes);
+app.use('/customers', customerRoutes);
+app.use('/admin', adminRoutes);
 
 // health check (ping)
 app.get('/api/ping', async (req, res) => {

@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tbody.innerHTML = '';
 
     try {
-      const res = await fetch('/api/products');
+      const res = await fetch('http://localhost:3000/api/products');
       if (!res.ok) throw new Error('Network response not ok');
       const payload = await res.json();
       if (!payload.success) throw new Error(payload.message || 'Server error');

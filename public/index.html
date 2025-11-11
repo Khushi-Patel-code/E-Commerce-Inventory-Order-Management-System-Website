@@ -1,27 +1,13 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Inventory Dashboard — ChronoSlate (Demo)</title>
-  <link rel="stylesheet" href="/styles.css" />
+    <title>Welcome</title>
 </head>
 <body>
-  <header>
-    <h1>Inventory Dashboard — Demo</h1>
-  </header>
+    <h2>Welcome to KPRJ! Who are you?</h2>
+    <button onclick="goTo('staff-login.html')">Staff / Admin</button>
+    <button onclick="goTo('customer-login.html')">Customer</button>
 
-  <main>
-    <section>
-      <button id="loadProducts">Load Products</button>
-      <div id="status"></div>
-      <table id="productsTable" border="1" style="width:100%; margin-top:12px; display:none;">
-        <thead id="productsHead"></thead>
-        <tbody id="productsBody"></tbody>
-      </table>
-    </section>
-  </main>
-
-  <script src="/js/main.js"></script>
+    <script src="js/router.js"></script>
 </body>
 </html>
