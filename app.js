@@ -32,6 +32,11 @@ app.use('/auth', authRoutes);
 app.use('/customers', customerRoutes);
 app.use('/admin', adminRoutes);
 
+const externalRoutes = require("./routes/external");
+app.use("/api/external", externalRoutes);
+
+app.use("/api/webservice", require("./routes/webservice"));
+
 // health check (ping)
 app.get('/api/ping', async (req, res) => {
   try {
@@ -48,5 +53,7 @@ app.use('/api', (req, res) => {
   res.status(404).json({ success: false, message: 'Unknown API endpoint' });
 });
 
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
+
