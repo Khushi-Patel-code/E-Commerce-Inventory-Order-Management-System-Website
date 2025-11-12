@@ -43,6 +43,10 @@
 
   <hr>
 
+  <h2>Download files</h2>
+  <button id="exportCSV">Export CSV</button>
+  <button id="exportPDF">Export PDF</button>
+
 <script>
   // ---------- CREATE ----------
   document.getElementById("createForm").addEventListener("submit", async (e) => {
@@ -105,6 +109,14 @@
     await fetch(`/api/products/${id}`, { method: "DELETE" });
     alert("Product Deleted!");
   }
+
+  // JSON to pdf/csv
+  document.getElementById("exportCSV").addEventListener("click", () => {
+    window.location.href = "/api/products/export/csv";
+  });
+  document.getElementById("exportPDF").addEventListener("click", () => {
+    window.location.href = "/api/products/export/pdf";
+  });
 </script>
 
 </body>

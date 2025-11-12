@@ -9,4 +9,9 @@ router.post('/', productController.addProduct);
 router.put('/:id', productController.updateProduct);
 router.delete('/:id', productController.deleteProduct);
 
+// Json to pdf/csv
+router.get('/export/csv', productController.exportProductsCSV);
+router.get('/export/pdf', productController.exportProductsPDF);
+
+
 module.exports = router;

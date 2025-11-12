@@ -13,10 +13,12 @@
 **Additional:**
 Make sure that your workbench is open and you are running all sql files. Then in terminal:
 
-`npm run dev`
+`npm run dev` or `npm start`
 
 Then go to index.html and run the page live. It should work.
 
+for converting a json to csv/pdf download the following libraries:
+`npm install json2csv pdfkit`
 
 
 
