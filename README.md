@@ -20,5 +20,12 @@ Then go to index.html and run the page live. It should work.
 for converting a json to csv/pdf download the following libraries:
 `npm install json2csv pdfkit`
 
+cloning intsructions
+
+`git clone https://github.com/Khushi-Patel-code/E-Commerce-Inventory-Order-Management-System-Website`
+
+`cd E-Commerce-Inventory-Order-Management-System-Website/`
+
+`git pull origin main`
 
 
