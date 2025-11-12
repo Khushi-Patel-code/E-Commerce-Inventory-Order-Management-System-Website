@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Inventory CRUD</title>
+</head>
+<body>
+  <h1>Inventory CRUD Test Page</h1>
+
+  <!-- CREATE INVENTORY -->
+  <h2>Add Inventory</h2>
+  <form id="createForm">
+    <input type="number" id="product_id" placeholder="Product ID" required><br>
+    <input type="number" id="warehouse_id" placeholder="Warehouse ID" required><br>
+    <input type="number" id="quantity" placeholder="Quantity" min="0" required><br>
+    <button type="submit">Add / Update Inventory</button>
+  </form>
+
+  <hr>
+
+  <!-- READ INVENTORY -->
+  <h2>All Inventory Records</h2>
+  <button onclick="loadInventory()">Load Inventory</button>
+  <table border="1" id="inventoryTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Product ID</th>
+        <th>Product Name</th>
+        <th>Warehouse ID</th>
+        <th>Warehouse Name</th>
+        <th>Quantity</th>
+        <th>Last Updated</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <hr>
+  <!-- READ ONE INVENTORY (BY ID) -->
+  <h2>Find Inventory by ID</h2>
+  <input type="number" id="searchId" placeholder="Enter Inventory ID">
+  <button onclick="getInventoryById()">Search</button>
+  <div id="inventoryDetails"></div>
+
+  <hr>
+
+  <!-- UPDATE INVENTORY -->
+  <h2>Update Inventory</h2>
+  <form id="updateForm">
+    <input type="number" id="updateId" placeholder="Inventory ID" required><br>
+    <input type="number" id="updateQuantity" placeholder="New Quantity" min="0" required><br>
+    <button type="submit">Update Inventory</button>
+  </form>
+
+  <hr>
+
+  <!-- DELETE INVENTORY -->
+  <h2>Delete Inventory</h2>
+  <input type="number" id="deleteId" placeholder="Inventory ID">
+  <button onclick="deleteInventory()">Delete</button>
+
+<script>
+  // CREATE
+  document.getElementById("createForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const inventory = {
+      product_id: document.getElementById("product_id").value,
+      warehouse_id: document.getElementById("warehouse_id").value,
+      quantity: document.getElementById("quantity").value
+    };
+
+    await fetch("/api/inventory", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(inventory)
+    });
+
+    alert("Inventory record added/updated!");
+  });
+
+  // READ
+  async function loadInventory() {
+    const res = await fetch("/api/inventory");
+    const data = await res.json();
+
+    const tbody = document.querySelector("#inventoryTable tbody");
+    tbody.innerHTML = "";
+
+    data.data.forEach(i => {
+      const row = `<tr>
+        <td>${i.inventory_id}</td>
+        <td>${i.product_id}</td>
+        <td>${i.product_name || ""}</td>
+        <td>${i.warehouse_id}</td>
+        <td>${i.warehouse_name || ""}</td>
+        <td>${i.quantity}</td>
+        <td>${i.last_updated}</td>
+      </tr>`;
+      tbody.insertAdjacentHTML("beforeend", row);
+    });
+  }
+
+    // READ BY ID 
+    async function getInventoryById() {
+      const id = document.getElementById("searchId").value;
+      if (!id) return alert("Please enter an Inventory ID");
+
+      const res = await fetch(`/api/inventory/${id}`);
+      const data = await res.json();
+
+      const detailsDiv = document.getElementById("inventoryDetails");
+      detailsDiv.innerHTML = "";
+
+      if (data.success && data.data) {
+        const inv = data.data;
+        detailsDiv.innerHTML = `
+          <h3>Inventory Record:</h3>
+          <p><b>ID:</b> ${inv.inventory_id}</p>
+          <p><b>Product ID:</b> ${inv.product_id} (${inv.product_name || ""})</p>
+          <p><b>Warehouse ID:</b> ${inv.warehouse_id} (${inv.warehouse_name || ""})</p>
+          <p><b>Quantity:</b> ${inv.quantity}</p>
+          <p><b>Last Updated:</b> ${inv.last_updated}</p>
+        `;
+      } else {
+        detailsDiv.innerHTML = `<p style="color:red;">${data.message || "Inventory record not found"}</p>`;
+      }
+    }
+
+  // UPDATE
+  document.getElementById("updateForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const id = document.getElementById("updateId").value;
+    const quantity = document.getElementById("updateQuantity").value;
+
+    await fetch(`/api/inventory/${id}`, {
+      method: "PUT",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ quantity })
+    });
+
+    alert("Inventory updated!");
+  });
+
+  // DELETE
+  async function deleteInventory() {
+    const id = document.getElementById("deleteId").value;
+    await fetch(`/api/inventory/${id}`, { method: "DELETE" });
+    alert("Inventory deleted!");
+  }
+</script>
+</body>
+</html>
