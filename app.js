@@ -47,7 +47,8 @@ app.use('/api/inventory', inventoryRoutes);
 const categoryRoutes = require('./routes/categories');
 app.use('/api/categories', categoryRoutes);
 
-
+const reviewRoutes = require('./routes/reviews');
+app.use('/api/reviews', reviewRoutes);
 
 
 // health check (ping)
