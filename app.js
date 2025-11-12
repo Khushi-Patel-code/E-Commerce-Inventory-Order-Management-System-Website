@@ -32,6 +32,9 @@ app.use('/customers', customerRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api/orders', ordersRoutes);
 
+const warehousesRoutes = require('./routes/warehouse');
+app.use('/api/warehouses', warehousesRoutes);
+
 const externalRoutes = require("./routes/external");
 app.use("/api/external", externalRoutes);
 
