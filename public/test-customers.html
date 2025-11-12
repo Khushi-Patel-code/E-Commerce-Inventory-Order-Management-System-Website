@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Customers CRUD</title>
+</head>
+<body>
+
+  <h1>Customer CRUD Test Page</h1>
+
+  <!--------------- CREATE CUSTOMER --------------->
+  <h2>Add Customer</h2>
+  <form id="createCustomerForm">
+    <input type="text" id="first_name" placeholder="First Name" required><br>
+    <input type="text" id="last_name" placeholder="Last Name" required><br>
+    <input type="email" id="email" placeholder="Email" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <input type="text" id="phone" placeholder="Phone"><br>
+    <input type="text" id="billing_address" placeholder="Billing Address"><br>
+    <input type="text" id="shipping_address" placeholder="Shipping Address"><br>
+    <button type="submit">Add Customer</button>
+  </form>
+
+  <hr>
+
+  <!--------------- READ ALL CUSTOMERS --------------->
+  <h2>All Customers</h2>
+  <button onclick="loadCustomers()">Load Customers</button>
+  <table border="1" id="customerTable" style="margin-top:10px;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Billing Address</th>
+        <th>Shipping Address</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <hr>
+
+  <!--------------- UPDATE CUSTOMER --------------->
+  <h2>Update Customer</h2>
+  <form id="updateCustomerForm">
+    <input type="number" id="updateId" placeholder="Customer ID" required><br>
+    <input type="text" id="updateFirstName" placeholder="New First Name"><br>
+    <input type="text" id="updateLastName" placeholder="New Last Name"><br>
+    <input type="text" id="updatePhone" placeholder="New Phone"><br>
+    <input type="text" id="updateBillingAddress" placeholder="New Billing Address"><br>
+    <input type="text" id="updateShippingAddress" placeholder="New Shipping Address"><br>
+    <button type="submit">Update</button>
+  </form>
+
+  <hr>
+
+  <!--------------- DELETE CUSTOMER --------------->
+  <h2>Delete Customer</h2>
+  <input type="number" id="deleteId" placeholder="Customer ID" required>
+  <button onclick="deleteCustomer()">Delete</button>
+
+  <hr>
+
+<script>
+  // ---------- CREATE ----------
+  document.getElementById("createCustomerForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const customer = {
+      first_name: document.getElementById("first_name").value,
+      last_name: document.getElementById("last_name").value,
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value,
+      phone: document.getElementById("phone").value,
+      billing_address: document.getElementById("billing_address").value,
+      shipping_address: document.getElementById("shipping_address").value
+    };
+
+    let res = await fetch("/customers/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(customer)
+    });
+
+    let data = await res.json();
+    alert(data.message || "Customer Added!");
+  });
+
+  // ---------- READ ----------
+  async function loadCustomers() {
+    const res = await fetch("/customers");
+    const data = await res.json();
+
+    const tbody = document.querySelector("#customerTable tbody");
+    tbody.innerHTML = "";
+
+    if (data.data && data.data.length > 0) {
+      data.data.forEach(c => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${c.customer_id}</td>
+          <td>${c.first_name}</td>
+          <td>${c.last_name}</td>
+          <td>${c.email}</td>
+          <td>${c.phone || ""}</td>
+          <td>${c.billing_address || ""}</td>
+          <td>${c.shipping_address || ""}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    } else {
+      tbody.innerHTML = "<tr><td colspan='7'>No customers found</td></tr>";
+    }
+  }
+
+  // ---------- UPDATE ----------
+  document.getElementById("updateCustomerForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const id = document.getElementById("updateId").value;
+
+    const customer = {
+      first_name: document.getElementById("updateFirstName").value || null,
+      last_name: document.getElementById("updateLastName").value || null,
+      phone: document.getElementById("updatePhone").value || null,
+      billing_address: document.getElementById("updateBillingAddress").value || null,
+      shipping_address: document.getElementById("updateShippingAddress").value || null
+    };
+
+    const res = await fetch(`/customers/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(customer)
+    });
+
+    let data = await res.json();
+    alert(data.message || "Customer Updated!");
+  });
+
+  // ---------- DELETE ----------
+  async function deleteCustomer() {
+    const id = document.getElementById("deleteId").value;
+    const res = await fetch(`/customers/${id}`, { method: "DELETE" });
+    const data = await res.json();
+    alert(data.message || "Customer Deleted!");
+  }
+</script>
+
+</body>
+</html>

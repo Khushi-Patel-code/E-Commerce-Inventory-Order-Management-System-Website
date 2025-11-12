@@ -3,7 +3,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-
 const app = express();
 
 const pool = require('./db/connection'); // your DB pool
@@ -15,6 +14,7 @@ const adminRoutes = require('./routes/admin');
 const authRoutes = require('./routes/auth');
 const customerRoutes = require('./routes/customers');
 const ordersRoutes = require('./routes/orders');
+const webserviceRoutes = require('./routes/webservice');
 
 app.use(express.static('public'));
 
