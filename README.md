@@ -29,3 +29,11 @@ cloning intsructions
 `git pull origin main`
 
 
+pushing instructions
+
+to add all changes in file
+`git add .` 
+
+`git commit -m "Commit message here"`
+
+`git push origin main`
