@@ -14,8 +14,7 @@ const productsRouter = require('./routes/products'); // products route
 const adminRoutes = require('./routes/admin');
 const authRoutes = require('./routes/auth');
 const customerRoutes = require('./routes/customers');
-
-
+const ordersRoutes = require('./routes/orders');
 
 app.use(express.static('public'));
 
@@ -31,6 +30,7 @@ app.use('/api/products', productsRouter);
 app.use('/auth', authRoutes);
 app.use('/customers', customerRoutes);
 app.use('/admin', adminRoutes);
+app.use('/api/orders', ordersRoutes);
 
 const externalRoutes = require("./routes/external");
 app.use("/api/external", externalRoutes);

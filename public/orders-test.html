@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Orders CRUD</title>
+</head>
+<body>
+
+  <h1>Order CRUD Test Page</h1>
+
+  <!--------------- CREATE ORDER --------------->
+  <h2>Add Order</h2>
+  <form id="createForm">
+    <input type="text" id="order_number" placeholder="Order Number" required><br>
+    <input type="number" id="customer_id" placeholder="Customer ID" required><br>
+    <input type="text" id="order_status" placeholder="Order Status (e.g., pending)" value="pending"><br>
+    <input type="text" id="shipping_address" placeholder="Shipping Address"><br>
+    <input type="text" id="billing_address" placeholder="Billing Address"><br>
+    <input type="number" id="subtotal" placeholder="Subtotal" step="0.01"><br>
+    <input type="number" id="tax" placeholder="Tax" step="0.01"><br>
+    <input type="number" id="shipping_fee" placeholder="Shipping Fee" step="0.01"><br>
+    <input type="number" id="total" placeholder="Total" step="0.01"><br>
+    <input type="number" id="created_by" placeholder="Created By (User ID)"><br>
+    <button type="submit">Add Order</button>
+  </form>
+
+  <hr>
+
+  <!--------------- READ ALL ORDERS --------------->
+  <h2>All Orders</h2>
+  <button onclick="loadOrders()">Load Orders</button>
+  <ul id="orderList"></ul>
+
+  <hr>
+
+  <!--------------- UPDATE ORDER --------------->
+  <h2>Update Order</h2>
+<form id="updateForm">
+  <input type="number" id="updateId" placeholder="Order ID" required><br>
+  <input type="text" id="updateStatus" placeholder="New Status (e.g., shipped)"><br>
+  <input type="text" id="updateShipping" placeholder="New Shipping Address"><br>
+  <input type="text" id="updateBilling" placeholder="New Billing Address"><br>
+  <input type="number" id="updateTotal" placeholder="New Total" step="0.01"><br>
+  <button type="submit">Update Order</button>
+</form>
+
+  <hr>
+
+  <!--------------- DELETE ORDER --------------->
+  <h2>Delete Order</h2>
+  <input type="number" id="deleteId" placeholder="Order ID">
+  <button onclick="deleteOrder()">Delete</button>
+
+  <hr>
+
+<script>
+  // ---------- CREATE ----------
+  document.getElementById("createForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    let order = {
+      order_number: document.getElementById("order_number").value,
+      customer_id: document.getElementById("customer_id").value,
+      order_status: document.getElementById("order_status").value,
+      shipping_address: document.getElementById("shipping_address").value,
+      billing_address: document.getElementById("billing_address").value,
+      subtotal: document.getElementById("subtotal").value,
+      tax: document.getElementById("tax").value,
+      shipping_fee: document.getElementById("shipping_fee").value,
+      total: document.getElementById("total").value,
+      created_by: document.getElementById("created_by").value
+    };
+
+    let res = await fetch("/api/orders", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(order)
+    });
+
+    if (res.ok) alert("Order Added!");
+    else alert("Error adding order");
+  });
+
+  // ---------- READ ----------
+  async function loadOrders() {
+    let res = await fetch("/api/orders");
+    let data = await res.json();
+
+    let ul = document.getElementById("orderList");
+    ul.innerHTML = "";
+
+    data.data.forEach(o => {
+      let li = document.createElement("li");
+      li.textContent = `${o.order_id} — ${o.order_number} — ${o.order_status} — $${o.total}`;
+      ul.appendChild(li);
+    });
+  }
+
+  // ---------- UPDATE ----------
+  document.getElementById("updateForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    let id = document.getElementById("updateId").value;
+
+    // Collect only non-empty fields to send to backend
+    let order = {};
+    const status = document.getElementById("updateStatus").value.trim();
+    const shipping = document.getElementById("updateShipping").value.trim();
+    const billing = document.getElementById("updateBilling").value.trim();
+    const total = document.getElementById("updateTotal").value.trim();
+
+    if (status) order.order_status = status;
+    if (shipping) order.shipping_address = shipping;
+    if (billing) order.billing_address = billing;
+    if (total) order.total = parseFloat(total);
+
+    if (Object.keys(order).length === 0) {
+      alert("Please fill at least one field to update!");
+      return;
+    }
+
+    let res = await fetch(`/api/orders/${id}`, {
+      method: "PUT",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(order)
+    });
+
+    if (res.ok) alert("Order Updated!");
+    else {
+      const errorData = await res.json();
+      alert("Error updating order: " + (errorData.message || "Unknown error"));
+    }
+  });
+  
+  // ---------- DELETE ----------
+  async function deleteOrder() {
+    let id = document.getElementById("deleteId").value;
+
+    let res = await fetch(`/api/orders/${id}`, { method: "DELETE" });
+    if (res.ok) alert("Order Deleted!");
+    else alert("Error deleting order");
+  }
+</script>
+
+</body>
+</html>
