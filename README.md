@@ -1,4 +1,5 @@
 **Install These first**
+
 `npm install jsonwebtoken`
 `npm install bcrypt`
 `npm install axios`
@@ -12,3 +13,4 @@ Make sure that your workbench is open and you are running all sql files. Then in
 `npm run dev`
 
 Then go to index.html and run the page live. It should work.
+
