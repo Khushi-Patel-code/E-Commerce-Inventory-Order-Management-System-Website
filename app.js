@@ -38,6 +38,9 @@ app.use('/api/warehouses', warehousesRoutes);
 const externalRoutes = require("./routes/external");
 app.use("/api/external", externalRoutes);
 
+const supplierRoutes = require('./routes/suppliers');
+app.use('/api/suppliers', supplierRoutes);
+
 app.use("/api/webservice", require("./routes/webservice"));
 
 // health check (ping)
