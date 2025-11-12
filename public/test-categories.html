@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Categories CRUD</title>
+</head>
+<body>
+  <h1>Categories CRUD Test Page</h1>
+
+  <!-- CREATE CATEGORY -->
+  <h2>Add Category</h2>
+  <form id="createForm">
+    <input type="text" id="category_name" placeholder="Category Name" required><br>
+    <textarea name="" id="description" placeholder="description"></textarea><br>
+    <button type="submit">Add Category</button>
+  </form>
+
+  <hr>
+
+  <!-- READ ALL CATEGORIES -->
+  <h2>All Categories</h2>
+  <button onclick="loadCategories()">Load Categories</button>
+  <table border="1" id="categoryTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Category Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <hr>
+
+  <!-- READ ONE CATEGORY -->
+  <h2>Find Category by ID</h2>
+  <input type="number" id="searchId" placeholder="Enter Category ID">
+  <button onclick="getCategoryById()">Search</button>
+  <div id="categoryDetails"></div>
+
+  <hr>
+
+  <!-- UPDATE CATEGORY -->
+  <h2>Update Category</h2>
+  <form id="updateForm">
+    <input type="number" id="updateId" placeholder="Category ID" required><br>
+    <input type="text" id="updateName" placeholder="New Category Name" required><br>
+    <input type="text" id="updateDescription" placeholder="New Description"><br>
+    <button type="submit">Update Category</button>
+  </form>
+
+  <hr>
+
+  <!-- DELETE CATEGORY -->
+  <h2>Delete Category</h2>
+  <input type="number" id="deleteId" placeholder="Category ID">
+  <button onclick="deleteCategory()">Delete</button>
+
+<script>
+  // CREATE
+  document.getElementById("createForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const category = {
+      category_name: document.getElementById("category_name").value,
+      description: document.getElementById("description").value
+    };
+
+    await fetch("/api/categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(category)
+    });
+
+    alert("Category added successfully!");
+  });
+
+  // READ ALL
+  async function loadCategories() {
+    const res = await fetch("/api/categories");
+    const data = await res.json();
+
+    const tbody = document.querySelector("#categoryTable tbody");
+    tbody.innerHTML = "";
+
+    data.data.forEach(c => {
+      const row = `<tr>
+        <td>${c.category_id}</td>
+        <td>${c.category_name}</td>
+        <td>${c.description || ""}</td>
+      </tr>`;
+      tbody.insertAdjacentHTML("beforeend", row);
+    });
+  }
+
+  // READ ONE
+  async function getCategoryById() {
+    const id = document.getElementById("searchId").value;
+    if (!id) return alert("Please enter a Category ID");
+
+    const res = await fetch(`/api/categories/${id}`);
+    const data = await res.json();
+
+    const detailsDiv = document.getElementById("categoryDetails");
+    detailsDiv.innerHTML = "";
+
+    if (data.success && data.data) {
+      const cat = data.data;
+      detailsDiv.innerHTML = `
+        <h3>Category Record:</h3>
+        <p><b>ID:</b> ${cat.category_id}</p>
+        <p><b>Category Name:</b> ${cat.category_name}</p>
+        <p><b>Description:</b> ${cat.description || ""}</p>
+      `;
+    } else {
+      detailsDiv.innerHTML = `<p style="color:red;">${data.message || "Category not found"}</p>`;
+    }
+  }
+
+  // UPDATE
+  document.getElementById("updateForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const id = document.getElementById("updateId").value;
+    const category_name = document.getElementById("updateName").value;
+    const description = document.getElementById("updateDescription").value;
+
+    await fetch(`/api/categories/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category_name, description })
+    });
+
+    alert("Category updated successfully!");
+  });
+
+  // DELETE
+  async function deleteCategory() {
+    const id = document.getElementById("deleteId").value;
+    if (!id) return alert("Please enter a Category ID");
+
+    await fetch(`/api/categories/${id}`, { method: "DELETE" });
+    alert("Category deleted successfully!");
+  }
+</script>
+</body>
+</html>

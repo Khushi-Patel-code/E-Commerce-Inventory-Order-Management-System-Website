@@ -15,7 +15,7 @@ const authRoutes = require('./routes/auth');
 const customerRoutes = require('./routes/customers');
 const ordersRoutes = require('./routes/orders');
 const webserviceRoutes = require('./routes/webservice');
-
+app.use("/api/webservice", require("./routes/webservice"));
 app.use(express.static('public'));
 
 // Middleware
@@ -44,7 +44,11 @@ app.use('/api/suppliers', supplierRoutes);
 const inventoryRoutes = require('./routes/inventory');
 app.use('/api/inventory', inventoryRoutes);
 
-app.use("/api/webservice", require("./routes/webservice"));
+const categoryRoutes = require('./routes/categories');
+app.use('/api/categories', categoryRoutes);
+
+
+
 
 // health check (ping)
 app.get('/api/ping', async (req, res) => {
