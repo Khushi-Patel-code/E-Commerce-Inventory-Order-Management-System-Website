@@ -58,6 +58,10 @@
   <input type="number" id="deleteId" placeholder="Supplier ID">
   <button onclick="deleteSupplier()">Delete</button>
 
+  <h2>Suppliers Export</h2>
+<button onclick="window.location.href='/api/suppliers/export/csv'">Export Suppliers CSV</button>
+<button onclick="window.location.href='/api/suppliers/export/pdf'">Export Suppliers PDF</button>
+
 <script>
   // CREATE
   document.getElementById("createForm").addEventListener("submit", async (e) => {

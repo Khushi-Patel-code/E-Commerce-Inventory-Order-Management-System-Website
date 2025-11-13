@@ -8,5 +8,7 @@ router.get('/', supplierController.getSuppliers);
 router.get('/:id', supplierController.getSupplierById);
 router.put('/:id', supplierController.updateSupplier);
 router.delete('/:id', supplierController.deleteSupplier);
+router.get('/export/csv', supplierController.exportSuppliersCSV);
+router.get('/export/pdf', supplierController.exportSuppliersPDF);
 
 module.exports = router;
