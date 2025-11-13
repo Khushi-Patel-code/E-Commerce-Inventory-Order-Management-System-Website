@@ -1,5 +1,7 @@
 // controllers/paymentController.js
 const pool = require('../db/connection');
+const { Parser } = require('json2csv');
+const PDFDocument = require('pdfkit');
 
 // CREATE
 exports.createPayment = async (req, res) => {
@@ -86,5 +88,153 @@ exports.deletePayment = async (req, res) => {
   } catch (err) {
     console.error('Error deleting payment:', err);
     res.status(500).json({ success: false, message: 'Error deleting payment record' });
+  }
+};
+
+// EXPORT PAYMENTS CSV
+exports.exportPaymentsCSV = async (req, res) => {
+  try {
+    const [results] = await pool.query(`
+      SELECT 
+        p.payment_id AS PaymentID,
+        p.order_id AS OrderID,
+        p.payment_method AS Method,
+        p.payment_status AS Status,
+        p.amount AS Amount,
+        p.paid_at AS PaidAt,
+        p.transaction_ref AS TransactionRef
+      FROM payments p
+      ORDER BY p.payment_id ASC
+    `);
+
+    const fields = [
+      "PaymentID",
+      "OrderID",
+      "Method",
+      "Status",
+      "Amount",
+      "PaidAt",
+      "TransactionRef"
+    ];
+
+    const json2csv = new Parser({ fields });
+    const csv = json2csv.parse(results);
+
+    res.header("Content-Type", "text/csv");
+    res.attachment("payments.csv");
+    res.send(csv);
+
+  } catch (err) {
+    console.error("Error exporting payments CSV:", err);
+    res.status(500).json({ success: false, message: "Failed to export payments CSV" });
+  }
+};
+
+
+// EXPORT PAYMENTS PDF
+exports.exportPaymentsPDF = async (req, res) => {
+  try {
+    const [results] = await pool.query(`
+      SELECT 
+        p.payment_id AS PaymentID,
+        p.order_id AS OrderID,
+        p.payment_method AS Method,
+        p.payment_status AS Status,
+        p.amount AS Amount,
+        p.paid_at AS PaidAt,
+        p.transaction_ref AS TransactionRef
+      FROM payments p
+      ORDER BY p.payment_id ASC
+    `);
+
+    const doc = new PDFDocument({ margin: 30, size: "A4" });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=payments.pdf");
+    doc.pipe(res);
+
+    // ----- Title -----
+    doc.fontSize(18).font("Helvetica-Bold").text("Payments Summary Report", { align: "center" });
+    doc.moveDown(1);
+
+    // ----- Table Setup -----
+    const tableTop = 100;
+    const rowHeight = 25;
+    const colWidths = [30, 40, 90, 80, 60, 140, 120];
+    const headers = ["ID", "Order", "Method", "Status", "Amount", "Paid At", "Transaction Ref"];
+
+    let x = 30;
+    let y = tableTop;
+
+    // Header Background
+    doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill("#f0f0f0");
+    doc.fillColor("black").fontSize(11).font("Helvetica-Bold");
+
+    // Header Text
+    let currentX = x;
+    headers.forEach((header, i) => {
+      doc.text(header, currentX + 5, y + 7, { width: colWidths[i] - 10 });
+      currentX += colWidths[i];
+    });
+
+    // Header Border
+    doc.strokeColor("black").rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
+    y += rowHeight;
+
+    // ----- Rows -----
+    doc.font("Helvetica").fontSize(10);
+
+    results.forEach((r, idx) => {
+      if (y > 750) {
+        doc.addPage();
+        y = tableTop;
+
+        // Redraw header on new page
+        doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill("#f0f0f0");
+        doc.fillColor("black").font("Helvetica-Bold");
+
+        currentX = x;
+        headers.forEach((header, i) => {
+          doc.text(header, currentX + 5, y + 7, { width: colWidths[i] - 10 });
+          currentX += colWidths[i];
+        });
+
+        doc.strokeColor("black").rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
+        y += rowHeight;
+        doc.font("Helvetica").fontSize(10);
+      }
+
+      // Row background
+      const bgColor = idx % 2 === 0 ? "#fafafa" : "white";
+      doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill(bgColor);
+      doc.fillColor("black");
+
+      const row = [
+        r.PaymentID,
+        r.OrderID,
+        r.Method,
+        r.Status,
+        `$${Number(r.Amount).toFixed(2)}`,
+        r.PaidAt ? new Date(r.PaidAt).toLocaleString() : "—",
+        r.TransactionRef ?? "—"
+      ];
+
+      currentX = x;
+      row.forEach((val, i) => {
+        doc.text(String(val), currentX + 5, y + 7, { width: colWidths[i] - 10 });
+        currentX += colWidths[i];
+      });
+
+      // Border
+      doc.strokeColor("black").rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
+
+      y += rowHeight;
+    });
+
+    doc.end();
+
+  } catch (err) {
+    console.error("Error exporting payments PDF:", err);
+    res.status(500).json({ success: false, message: "Failed to export payments PDF" });
   }
 };

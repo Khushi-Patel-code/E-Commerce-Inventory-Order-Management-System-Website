@@ -9,4 +9,8 @@ router.get('/:id', paymentController.getPaymentById);
 router.put('/:id', paymentController.updatePayment);
 router.delete('/:id', paymentController.deletePayment);
 
+// Export to PDF/CSV
+router.get("/export/csv", paymentController.exportPaymentsCSV);
+router.get("/export/pdf", paymentController.exportPaymentsPDF);
+
 module.exports = router;
