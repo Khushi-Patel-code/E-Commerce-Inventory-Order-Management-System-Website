@@ -1,5 +1,8 @@
 // controllers/orderController.js
 const pool = require('../db/connection');
+const { Parser } = require('json2csv');
+const PDFDocument = require('pdfkit');
+
 
 // 🟢 Get all orders
 exports.getAllOrders = async (req, res) => {
@@ -11,7 +14,7 @@ exports.getAllOrders = async (req, res) => {
         c.last_name AS customer_last_name
       FROM orders o
       JOIN customers c ON o.customer_id = c.customer_id
-      ORDER BY o.order_date DESC
+      ORDER BY o.order_date
       LIMIT 200
     `);
     res.json({ success: true, count: rows.length, data: rows });
@@ -139,5 +142,136 @@ exports.deleteOrder = async (req, res) => {
   } catch (err) {
     console.error('Error deleting order:', err.message || err);
     res.status(500).json({ success: false, message: 'Failed to delete order' });
+  }
+};
+
+// Export Orders as CSV
+exports.exportOrdersCSV = async (req, res) => {
+  try {
+    const [results] = await pool.query(`
+      SELECT
+        o.order_id AS ID,
+        o.order_number AS OrderNumber,
+        CONCAT(c.first_name, ' ', c.last_name) AS Customer,
+        o.order_status AS Status,
+        o.order_date AS OrderDate,
+        o.shipping_address AS ShippingAddress,
+        o.billing_address AS BillingAddress,
+        o.subtotal AS Subtotal,
+        o.tax AS Tax,
+        o.shipping_fee AS ShippingFee,
+        o.total AS Total
+      FROM orders o
+      JOIN customers c ON o.customer_id = c.customer_id
+      ORDER BY o.order_date
+    `);
+
+    const fields = [
+      "ID", "OrderNumber", "Customer", "Status", "OrderDate",
+      "ShippingAddress", "BillingAddress", "Subtotal", "Tax",
+      "ShippingFee", "Total"
+    ];
+
+    const parser = new Parser({ fields });
+    const csv = parser.parse(results);
+
+    res.header("Content-Type", "text/csv");
+    res.attachment("orders.csv");
+    res.send(csv);
+
+  } catch (err) {
+    console.error("Error exporting orders CSV:", err.message || err);
+    res.status(500).json({ success: false, message: "Failed to export orders CSV" });
+  }
+};
+
+// Export Orders as PDF
+exports.exportOrdersPDF = async (req, res) => {
+  try {
+    const [results] = await pool.query(`
+      SELECT
+        o.order_id AS ID,
+        o.order_number AS OrderNumber,
+        CONCAT(c.first_name, ' ', c.last_name) AS Customer,
+        o.order_status AS Status,
+        o.order_date AS OrderDate,
+        o.total AS Total
+      FROM orders o
+      JOIN customers c ON o.customer_id = c.customer_id
+      ORDER BY o.order_date 
+    `);
+
+    const doc = new PDFDocument({ margin: 30, size: "A4" });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=orders.pdf");
+
+    doc.pipe(res);
+
+    // Title
+    doc.fontSize(18).font("Helvetica-Bold").text("Orders Report", { align: "center" });
+    doc.moveDown(1);
+
+    // Table layout
+    const tableTop = 100;
+    const rowHeight = 25;
+
+    const headers = ["ID", "Order #", "Customer", "Status", "Date", "Total"];
+    const colWidths = [30, 70, 140, 80, 140, 60];
+
+    let x = 30;
+    let y = tableTop;
+
+    // Header background
+    doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill("#f0f0f0");
+    doc.fillColor("black").font("Helvetica-Bold").fontSize(11);
+
+    let currentX = x;
+    headers.forEach((h, i) => {
+      doc.text(h, currentX + 5, y + 7, { width: colWidths[i] - 10 });
+      currentX += colWidths[i];
+    });
+
+    doc.strokeColor("black").rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
+    y += rowHeight;
+
+    // Rows
+    doc.font("Helvetica").fontSize(10);
+
+    results.forEach((o, index) => {
+      if (y > 750) {
+        doc.addPage();
+        y = tableTop;
+      }
+
+      // Alternating colors
+      const bgColor = index % 2 === 0 ? "#fafafa" : "white";
+      doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill(bgColor);
+      doc.fillColor("black");
+
+      const row = [
+        o.ID,
+        o.OrderNumber,
+        o.Customer,
+        o.Status,
+        new Date(o.OrderDate).toLocaleString(),
+        `$${o.Total}`
+      ];
+
+      currentX = x;
+      row.forEach((val, i) => {
+        doc.text(String(val), currentX + 5, y + 7, { width: colWidths[i] - 10 });
+        currentX += colWidths[i];
+      });
+
+      doc.strokeColor("black").rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
+      y += rowHeight;
+    });
+
+    doc.end();
+
+  } catch (err) {
+    console.error("Error exporting orders PDF:", err.message || err);
+    res.status(500).json({ success: false, message: "Failed to export orders PDF" });
   }
 };

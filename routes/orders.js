@@ -8,5 +8,7 @@ router.get('/:id', orderController.getOrderById);
 router.post('/', orderController.addOrder);
 router.put('/:id', orderController.updateOrder);
 router.delete('/:id', orderController.deleteOrder);
+router.get('/export/csv', orderController.exportOrdersCSV);
+router.get('/export/pdf', orderController.exportOrdersPDF);
 
 module.exports = router;
