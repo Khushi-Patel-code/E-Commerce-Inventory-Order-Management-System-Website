@@ -203,12 +203,29 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-// ✅ Export Products as CSV
+// Export Products as CSV (with category name)
 exports.exportProductsCSV = async (req, res) => {
   try {
-    const [results] = await pool.query('SELECT * FROM products');
-    const json2csv = new Parser();
+    const [results] = await pool.query(`
+      SELECT 
+        p.product_id AS ID,
+        p.sku AS SKU,
+        p.product_name AS Name,
+        p.description AS Description,
+        c.category_name AS Category,
+        p.price AS Price,
+        p.retail_price AS RetailPrice,
+        p.active AS Active,
+        p.created_at AS CreatedAt
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.category_id
+      ORDER BY p.product_id ASC
+    `);
+
+    const fields = ['ID', 'SKU', 'Name', 'Description', 'Category', 'Price', 'RetailPrice', 'Active', 'CreatedAt'];
+    const json2csv = new Parser({ fields });
     const csv = json2csv.parse(results);
+
     res.header('Content-Type', 'text/csv');
     res.attachment('products.csv');
     res.send(csv);
@@ -218,75 +235,106 @@ exports.exportProductsCSV = async (req, res) => {
   }
 };
 
-// ✅ Export Products as PDF
+// Export Products as PDF
 exports.exportProductsPDF = async (req, res) => {
   try {
-    const [results] = await pool.query('SELECT * FROM products');
+    const [results] = await pool.query(`
+      SELECT 
+        p.product_id AS ID,
+        p.sku AS SKU,
+        p.product_name AS Name,
+        c.category_name AS Category,
+        p.price AS Price,
+        p.retail_price AS RetailPrice,
+        p.active AS Active,
+        p.created_at AS CreatedAt
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.category_id
+      ORDER BY p.product_id ASC
+    `);
 
-    const PDFDocument = require('pdfkit');
     const doc = new PDFDocument({ margin: 30, size: 'A4' });
 
+    // Send as downloadable file
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=products_table.pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=products.pdf');
     doc.pipe(res);
 
-    // Title
-    doc.fontSize(18).text('Products Report', { align: 'center' });
+    // ---- Title ----
+    doc.fontSize(18).font('Helvetica-Bold').text('Products Report', { align: 'center' });
     doc.moveDown(1);
 
-    // Table Header Styles
-    doc.fontSize(12).font('Helvetica-Bold');
+    // ---- Table setup ----
+    const tableTop = 100;
+    const rowHeight = 25;
+    const colWidths = [30, 60, 170, 120, 60, 60, 50]; // column widths
+    const headers = ['ID', 'SKU', 'Name', 'Category', 'Price', 'Retail', 'Active'];
 
-    const headers = [
-      'ID', 'SKU', 'Name', 'Description', 'Category ID',
-      'Price', 'Retail Price', 'Active', 'Created At'
-    ];
+    let x = 30;
+    let y = tableTop;
 
-    // Column x positions (tweak spacing as needed)
-    const xPositions = [30, 70, 140, 250, 400, 460, 520, 580, 630];
-    const startY = doc.y;
-    let y = startY + 10;
+    // Draw header background
+    doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill('#f0f0f0');
+    doc.fillColor('black').fontSize(11).font('Helvetica-Bold');
 
-    // Draw headers
+    // Draw header text
+    let currentX = x;
     headers.forEach((header, i) => {
-      doc.text(header, xPositions[i], y);
+      doc.text(header, currentX + 5, y + 7, { width: colWidths[i] - 10, align: 'left' });
+      currentX += colWidths[i];
     });
 
-    doc.moveTo(30, y + 15).lineTo(560, y + 15).stroke(); // underline header
-    y += 25;
+    // Draw header border
+    doc.strokeColor('black').lineWidth(1).rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
 
-    // Table Content
+    y += rowHeight;
+
+    // ---- Table rows ----
     doc.font('Helvetica').fontSize(10);
 
-    results.forEach((p) => {
-      if (y > 750) {  // new page when nearing bottom
+    results.forEach((p, index) => {
+      if (y > 750) { // start new page if bottom reached
         doc.addPage();
-        y = 50;
+        y = tableTop;
       }
 
-      const rowData = [
-        p.product_id,
-        p.sku,
-        p.product_name,
-        (p.description || '').slice(0, 25) + (p.description?.length > 25 ? '...' : ''), // short desc
-        p.category_id ?? 'N/A',
-        `$${p.price}`,
-        p.retail_price ? `$${p.retail_price}` : '—',
-        p.active ? 'Yes' : 'No',
-        new Date(p.created_at).toLocaleDateString()
+      // Alternate row color
+      if (index % 2 === 0) {
+        doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill('#fafafa');
+      } else {
+        doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill('white');
+      }
+      doc.fillColor('black');
+
+      const row = [
+        p.ID,
+        p.SKU,
+        p.Name,
+        p.Category || 'N/A',
+        `$${p.Price}`,
+        p.RetailPrice ? `$${p.RetailPrice}` : '—',
+        p.Active ? 'Yes' : 'No'
       ];
 
-      rowData.forEach((val, i) => {
-        doc.text(String(val), xPositions[i], y, { width: 100 });
+      currentX = x;
+      row.forEach((val, i) => {
+        doc.text(String(val), currentX + 5, y + 7, { width: colWidths[i] - 10, align: 'left' });
+        currentX += colWidths[i];
       });
 
-      y += 18;
+      // Draw row border
+      doc.strokeColor('black').rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
+
+      y += rowHeight;
     });
 
+    // End the PDF
     doc.end();
+
   } catch (err) {
-    console.error('Error exporting products PDF:', err);
+    console.error('Error exporting products PDF:', err.message || err);
     res.status(500).json({ success: false, message: 'Failed to export PDF' });
   }
 };
+
 
