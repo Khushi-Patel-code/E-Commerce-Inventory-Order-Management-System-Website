@@ -154,7 +154,7 @@ exports.exportPaymentsPDF = async (req, res) => {
     doc.pipe(res);
 
     // ----- Title -----
-    doc.fontSize(18).font("Helvetica-Bold").text("Payments Summary Report", { align: "center" });
+    doc.fontSize(18).font("Helvetica-Bold").text("Payments Report", { align: "center" });
     doc.moveDown(1);
 
     // ----- Table Setup -----

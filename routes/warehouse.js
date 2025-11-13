@@ -10,4 +10,7 @@ router.post('/', warehouseController.createWarehouse);
 router.put('/:id', warehouseController.updateWarehouse);
 router.delete('/:id', warehouseController.deleteWarehouse);
 
+router.get("/export/csv", warehouseController.exportWarehousesCSV);
+router.get("/export/pdf", warehouseController.exportWarehousesPDF);
+
 module.exports = router;
