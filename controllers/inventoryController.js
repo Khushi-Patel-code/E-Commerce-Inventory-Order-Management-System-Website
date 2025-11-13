@@ -1,5 +1,7 @@
 // controllers/inventoryController.js
 const pool = require('../db/connection');
+const { Parser } = require('json2csv');
+const PDFDocument = require('pdfkit');
 
 // CREATE
 exports.createInventory = async (req, res) => {
@@ -89,3 +91,125 @@ exports.deleteInventory = async (req, res) => {
     res.status(500).json({ success: false, message: 'Error deleting inventory' });
   }
 };
+
+// EXPORT INVENTORY CSV
+exports.exportInventoryCSV = async (req, res) => {
+  try {
+    const [results] = await pool.query(`
+      SELECT 
+        i.inventory_id AS InventoryID,
+        p.product_name AS Product,
+        w.warehouse_name AS Warehouse,
+        i.quantity AS Quantity,
+        i.last_updated AS LastUpdated
+      FROM inventory i
+      JOIN products p ON i.product_id = p.product_id
+      JOIN warehouses w ON i.warehouse_id = w.warehouse_id
+      ORDER BY i.inventory_id ASC
+    `);
+
+    const fields = ["InventoryID", "Product", "Warehouse", "Quantity", "LastUpdated"];
+    const json2csv = new Parser({ fields });
+
+    const csv = json2csv.parse(results);
+
+    res.header("Content-Type", "text/csv");
+    res.attachment("inventory.csv");
+    res.send(csv);
+
+  } catch (err) {
+    console.error("Error exporting inventory CSV:", err);
+    res.status(500).json({ success: false, message: "Failed to export inventory CSV" });
+  }
+};
+
+// EXPORT INVENTORY PDF
+exports.exportInventoryPDF = async (req, res) => {
+  try {
+    const [results] = await pool.query(`
+      SELECT 
+        i.inventory_id AS InventoryID,
+        p.product_name AS Product,
+        w.warehouse_name AS Warehouse,
+        i.quantity AS Quantity,
+        i.last_updated AS LastUpdated
+      FROM inventory i
+      JOIN products p ON i.product_id = p.product_id
+      JOIN warehouses w ON i.warehouse_id = w.warehouse_id
+      ORDER BY i.inventory_id ASC
+    `);
+
+    const doc = new PDFDocument({ margin: 30, size: "A4" });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=inventory.pdf");
+    doc.pipe(res);
+
+    // ----- Title -----
+    doc.fontSize(18).font("Helvetica-Bold").text("Inventory Report", { align: "center" });
+    doc.moveDown(1);
+
+    // ----- Table Setup -----
+    const tableTop = 100;
+    const rowHeight = 25;
+    const colWidths = [30, 160, 150, 60, 130];  // widths fine-tuned to avoid overflow
+    const headers = ["ID", "Product", "Warehouse", "Qty", "Last Updated"];
+
+    let x = 30;
+    let y = tableTop;
+
+    // Header Background
+    doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill("#f0f0f0");
+    doc.fillColor("black").fontSize(11).font("Helvetica-Bold");
+
+    // Header Text
+    let currentX = x;
+    headers.forEach((header, i) => {
+      doc.text(header, currentX + 5, y + 7, { width: colWidths[i] - 10 });
+      currentX += colWidths[i];
+    });
+
+    doc.strokeColor("black").rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
+    y += rowHeight;
+
+    // ----- Rows -----
+    doc.font("Helvetica").fontSize(10);
+
+    results.forEach((r, idx) => {
+      if (y > 750) {
+        doc.addPage();
+        y = tableTop;
+      }
+
+      // Alternate row colors
+      const bgColor = idx % 2 === 0 ? "#fafafa" : "white";
+      doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill(bgColor);
+      doc.fillColor("black");
+
+      const row = [
+        r.InventoryID,
+        r.Product,
+        r.Warehouse,
+        r.Quantity,
+        new Date(r.LastUpdated).toLocaleString()
+      ];
+
+      currentX = x;
+      row.forEach((val, i) => {
+        doc.text(String(val), currentX + 5, y + 7, { width: colWidths[i] - 10 });
+        currentX += colWidths[i];
+      });
+
+      doc.strokeColor("black").rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
+      y += rowHeight;
+    });
+    
+
+    doc.end();
+
+  } catch (err) {
+    console.error("Error exporting inventory PDF:", err);
+    res.status(500).json({ success: false, message: "Failed to export inventory PDF" });
+  }
+};
+

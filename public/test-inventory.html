@@ -59,6 +59,12 @@
   <input type="number" id="deleteId" placeholder="Inventory ID">
   <button onclick="deleteInventory()">Delete</button>
 
+  <hr>
+  <h2>Inventory Export</h2>
+  <button onclick="window.location.href='/api/inventory/export/csv'">Export CSV</button>
+  <button onclick="window.location.href='/api/inventory/export/pdf'">Export PDF</button>
+
+
 <script>
   // CREATE
   document.getElementById("createForm").addEventListener("submit", async (e) => {

@@ -51,7 +51,7 @@ exports.addProduct = async (req, res) => {
   }
 };
 
-// Simpler updateProduct function
+//updateProduct function
 exports.updateProduct = async (req, res) => {
   const { id } = req.params;
   const { sku, product_name, description, category_id, price, retail_price, active } = req.body;
@@ -243,7 +243,8 @@ exports.exportProductsPDF = async (req, res) => {
         p.product_id AS ID,
         p.sku AS SKU,
         p.product_name AS Name,
-        c.category_name AS Category,
+        COALESCE(c.category_name, 'N/A') AS Category,
+        p.description AS Description,
         p.price AS Price,
         p.retail_price AS RetailPrice,
         p.active AS Active,
@@ -255,86 +256,114 @@ exports.exportProductsPDF = async (req, res) => {
 
     const doc = new PDFDocument({ margin: 30, size: 'A4' });
 
-    // Send as downloadable file
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=products.pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=products_table.pdf');
     doc.pipe(res);
 
-    // ---- Title ----
-    doc.fontSize(18).font('Helvetica-Bold').text('Products Report', { align: 'center' });
-    doc.moveDown(1);
+    // Layout config
+    const startX = 30;
+    let y = 50; // top position
+    const pageBottom = doc.page.height - 40;
+    const cellPadding = 6;
 
-    // ---- Table setup ----
-    const tableTop = 100;
-    const rowHeight = 25;
-    const colWidths = [30, 60, 170, 120, 60, 60, 50]; // column widths
-    const headers = ['ID', 'SKU', 'Name', 'Category', 'Price', 'Retail', 'Active'];
+    // Columns: label and width
+    const cols = [
+      { key: 'ID', label: 'ID', width: 30 },
+      { key: 'SKU', label: 'SKU', width: 70 },
+      { key: 'Name', label: 'Name', width: 150 },
+      { key: 'Description', label: 'Description', width: 170 },
+      { key: 'Category', label: 'Category', width: 90 },
+      { key: 'Price', label: 'Price', width: 60 },
+      { key: 'RetailPrice', label: 'Retail', width: 60 },
+      { key: 'Active', label: 'Active', width: 40 },
+      { key: 'CreatedAt', label: 'Created At', width: 80 }
+    ];
 
-    let x = 30;
-    let y = tableTop;
+    // Helper: draw table header
+    const drawHeader = () => {
+      doc.font('Helvetica-Bold').fontSize(11);
+      let x = startX;
+      const headerHeight = 20;
+      // draw header cells
+      cols.forEach(col => {
+        doc.rect(x, y, col.width, headerHeight).fill('#f0f0f0').stroke();
+        doc.fillColor('black').text(col.label, x + cellPadding, y + 5, { width: col.width - cellPadding * 2, align: 'left' });
+        x += col.width;
+      });
+      y += headerHeight;
+    };
 
-    // Draw header background
-    doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill('#f0f0f0');
-    doc.fillColor('black').fontSize(11).font('Helvetica-Bold');
-
-    // Draw header text
-    let currentX = x;
-    headers.forEach((header, i) => {
-      doc.text(header, currentX + 5, y + 7, { width: colWidths[i] - 10, align: 'left' });
-      currentX += colWidths[i];
-    });
-
-    // Draw header border
-    doc.strokeColor('black').lineWidth(1).rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
-
-    y += rowHeight;
-
-    // ---- Table rows ----
+    // Draw page title + header
+    doc.fontSize(16).font('Helvetica-Bold').text('Products Report', { align: 'center' });
+    y += 10;
+    drawHeader();
     doc.font('Helvetica').fontSize(10);
 
-    results.forEach((p, index) => {
-      if (y > 750) { // start new page if bottom reached
-        doc.addPage();
-        y = tableTop;
-      }
+    // For each row, compute height required per cell, draw cell rects, then text
+    for (let i = 0; i < results.length; i++) {
+      const r = results[i];
 
-      // Alternate row color
-      if (index % 2 === 0) {
-        doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill('#fafafa');
-      } else {
-        doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill('white');
-      }
-      doc.fillColor('black');
-
-      const row = [
-        p.ID,
-        p.SKU,
-        p.Name,
-        p.Category || 'N/A',
-        `$${p.Price}`,
-        p.RetailPrice ? `$${p.RetailPrice}` : '—',
-        p.Active ? 'Yes' : 'No'
-      ];
-
-      currentX = x;
-      row.forEach((val, i) => {
-        doc.text(String(val), currentX + 5, y + 7, { width: colWidths[i] - 10, align: 'left' });
-        currentX += colWidths[i];
+      // prepare row values (string) in same order as cols
+      const rowVals = cols.map(col => {
+        // format values nicely
+        let val = r[col.key];
+        if (col.key === 'Price' || col.key === 'RetailPrice') {
+          val = (val === null || val === undefined) ? '—' : `$${Number(val).toFixed(2)}`;
+        } else if (col.key === 'Active') {
+          val = r.Active ? 'Yes' : 'No';
+        } else if (col.key === 'CreatedAt') {
+          val = r.CreatedAt ? new Date(r.CreatedAt).toLocaleString() : '';
+        } else if (val === null || val === undefined) {
+          val = '';
+        }
+        return String(val);
       });
 
-      // Draw row border
-      doc.strokeColor('black').rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
+      // measure height per cell (wrapped)
+      let rowHeight = 0;
+      let x = startX;
+      cols.forEach((col, idx) => {
+        const text = rowVals[idx];
+        const availableWidth = col.width - cellPadding * 2;
+        const h = doc.heightOfString(text, { width: availableWidth });
+        rowHeight = Math.max(rowHeight, h + cellPadding * 2);
+        x += col.width;
+      });
 
+      // page break if needed
+      if (y + rowHeight > pageBottom) {
+        doc.addPage();
+        y = 50;
+        // redraw header on new page
+        drawHeader();
+        doc.font('Helvetica').fontSize(10);
+      }
+
+      // draw each cell rectangle + text
+      x = startX;
+      cols.forEach((col, idx) => {
+        // cell rect (stroke draws border)
+        doc.rect(x, y, col.width, rowHeight).fill('white').stroke();
+
+        // write text inside with padding
+        doc.fillColor('black').text(rowVals[idx], x + cellPadding, y + cellPadding, {
+          width: col.width - cellPadding * 2,
+          align: 'left'
+        });
+
+        x += col.width;
+      });
+
+      // move down
       y += rowHeight;
-    });
+    }
 
-    // End the PDF
     doc.end();
-
   } catch (err) {
-    console.error('Error exporting products PDF:', err.message || err);
+    console.error('Error exporting products PDF:', err);
     res.status(500).json({ success: false, message: 'Failed to export PDF' });
   }
 };
+
 
 
