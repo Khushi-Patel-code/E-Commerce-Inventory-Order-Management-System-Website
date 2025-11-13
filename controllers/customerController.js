@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../db/connection');
 
+const { Parser } = require('json2csv');
+const PDFDocument = require('pdfkit');
 
 // -------------------- AUTHENTICATION --------------------
 
@@ -136,5 +138,155 @@ exports.deleteCustomer = async (req, res) => {
   } catch (err) {
     console.error('Error deleting customer:', err.message);
     res.status(500).json({ success: false, message: 'Failed to delete customer' });
+  }
+};
+
+// Export CSV
+exports.exportCustomersCSV = async (req, res) => {
+  try {
+    const [results] = await db.query(`
+      SELECT
+        customer_id AS ID,
+        first_name AS FirstName,
+        last_name AS LastName,
+        email AS Email,
+        phone AS Phone,
+        billing_address AS BillingAddress,
+        shipping_address AS ShippingAddress,
+        created_at AS CreatedAt,
+        is_active AS Active
+      FROM customers
+      ORDER BY customer_id ASC
+    `);
+
+    const fields = [
+      "ID",
+      "FirstName",
+      "LastName",
+      "Email",
+      "Phone",
+      "BillingAddress",
+      "ShippingAddress",
+      "CreatedAt",
+      "Active"
+    ];
+
+    const parser = new Parser({ fields });
+    const csv = parser.parse(results);
+
+    res.header("Content-Type", "text/csv");
+    res.attachment("customers.csv");
+    res.send(csv);
+
+  } catch (err) {
+    console.error("Error exporting customers CSV:", err);
+    res.status(500).json({ success: false, message: "Failed to export customers CSV" });
+  }
+};
+
+
+// Export PDF
+exports.exportCustomersPDF = async (req, res) => {
+  try {
+    const [results] = await db.query(`
+      SELECT
+        customer_id AS ID,
+        first_name AS FirstName,
+        last_name AS LastName,
+        email AS Email,
+        phone AS Phone,
+        billing_address AS BillingAddress,
+        shipping_address AS ShippingAddress,
+        created_at AS CreatedAt,
+        is_active AS Active
+      FROM customers
+      ORDER BY customer_id ASC
+    `);
+
+    const doc = new PDFDocument({ margin: 30, size: "A4" });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=customers.pdf");
+    doc.pipe(res);
+
+    // Title
+    doc.fontSize(18).font("Helvetica-Bold").text("Customers Report", { align: "center" });
+    doc.moveDown(1);
+
+    // Table setup
+    const tableTop = 100;
+    const rowHeight = 45;
+
+    const colWidths = [
+      25,   // ID
+      45,   // First Name
+      45,   // Last Name
+      130,  // Email
+      80,   // Phone
+      90,  // Billing Address
+      90,  // Shipping Address
+      50,   // Active
+    ];
+
+    const headers = ["ID","First","Last","Email","Phone","Billing Address","Shipping Address","Active"];
+
+    let x = 30;
+    let y = tableTop;
+
+    // Header background
+    doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill("#f0f0f0");
+    doc.fillColor("black").font("Helvetica-Bold").fontSize(11);
+
+    let currentX = x;
+    headers.forEach((header, i) => {
+      doc.text(header, currentX + 5, y + 10, { width: colWidths[i] - 10 });
+      currentX += colWidths[i];
+    });
+
+    doc.strokeColor("black").rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
+    y += rowHeight;
+
+    // Rows
+    doc.font("Helvetica").fontSize(9);
+
+    results.forEach((c, index) => {
+      if (y > 750) {
+        doc.addPage();
+        y = tableTop;
+      }
+
+      // Alternate row colors
+      const bg = index % 2 === 0 ? "#fafafa" : "white";
+      doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill(bg);
+      doc.fillColor("black");
+
+      const row = [
+        c.ID,
+        c.FirstName,
+        c.LastName,
+        c.Email,
+        c.Phone || "—",
+        c.BillingAddress || "—",
+        c.ShippingAddress || "—",
+        c.Active ? "Yes" : "No"
+      ];
+
+      currentX = x;
+      row.forEach((val, i) => {
+        doc.text(String(val), currentX + 5, y + 10, {
+          width: colWidths[i] - 10,
+        });
+        currentX += colWidths[i];
+      });
+
+      doc.strokeColor("black").rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
+      y += rowHeight;
+    });
+
+    doc.end();
+
+  } catch (err) {
+    console.error("Error exporting customers PDF:", err);
+    res.status(500).json({ success: false, message: "Failed to export customers PDF" });
   }
 };

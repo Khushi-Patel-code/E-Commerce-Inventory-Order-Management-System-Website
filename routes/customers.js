@@ -15,4 +15,7 @@ router.get('/:id', customerController.getCustomerById);
 router.put('/:id', customerController.updateCustomer);
 router.delete('/:id', customerController.deleteCustomer);
 
+router.get("/export/csv", customerController.exportCustomersCSV);
+router.get("/export/pdf", customerController.exportCustomersPDF);
+
 module.exports = router;
