@@ -15,7 +15,8 @@ Make sure that your workbench is open and you are running all sql files. Then in
 
 `npm run dev` or `npm start`
 
-Then go to index.html and run the page live. It should work.
+**IMPORTANT!!!!!!!!!!!!!!**
+Furthermore, ensure your .env file and connection.js files are properly configured your DB_HOST and DB_USER should be localhost and root respectively unless otherwise stated. If your password variable is DB_PASS or DB_PASSWORD, whatever it's called in one file, it has to be the same when it's called in the other. Then go to index.html and run the page live. It should work.
 
 for converting a json to csv/pdf download the following libraries:
 `npm install json2csv pdfkit`
@@ -37,3 +38,4 @@ to add all changes in file
 `git commit -m "Commit message here"`
 
 `git push origin main`
+
