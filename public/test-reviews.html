@@ -61,6 +61,10 @@
   <input type="number" id="deleteId" placeholder="Review ID">
   <button onclick="deleteReview()">Delete</button>
 
+  <h2>Reviews Export</h2>
+<button onclick="window.location.href='/api/reviews/export/csv'">Export Reviews CSV</button>
+<button onclick="window.location.href='/api/reviews/export/pdf'">Export Reviews PDF</button>
+
   <script>
     // CREATE
     document.getElementById("createForm").addEventListener("submit", async (e) => {
