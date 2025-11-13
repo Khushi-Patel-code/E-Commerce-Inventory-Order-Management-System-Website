@@ -56,6 +56,11 @@
   <input type="number" id="deleteId" placeholder="Category ID">
   <button onclick="deleteCategory()">Delete</button>
 
+  <hr>
+  <h2>Export to CSV/PDF</h2>
+  <button onclick="window.location.href='/api/categories/export/csv'">Export CSV</button>
+  <button onclick="window.location.href='/api/categories/export/pdf'">Export PDF</button>
+
 <script>
   // CREATE
   document.getElementById("createForm").addEventListener("submit", async (e) => {

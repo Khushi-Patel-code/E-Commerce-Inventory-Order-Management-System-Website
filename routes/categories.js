@@ -9,4 +9,7 @@ router.get('/:id', categoryController.getCategoryById);
 router.put('/:id', categoryController.updateCategory);
 router.delete('/:id', categoryController.deleteCategory);
 
+router.get("/export/csv", categoryController.exportCategoriesCSV);
+router.get("/export/pdf", categoryController.exportCategoriesPDF);
+
 module.exports = router;
