@@ -59,4 +59,7 @@ router.get("/dashboard/orders", async (req, res) => {
     }
 });
 
+router.get("/profile/:id", adminController.getAdminProfile);
+router.put("/profile/:id", adminController.updateAdminProfile);
+
 module.exports = router;

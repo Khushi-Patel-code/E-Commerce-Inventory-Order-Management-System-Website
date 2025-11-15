@@ -47,15 +47,22 @@
     <a href="admin-views.html"><i class="fa fa-table"></i> SQL Views</a>
     <a href="admin-reports.html"><i class="fa fa-chart-line"></i> Reports</a>
     <a href="admin-charts.html"><i class="fa fa-chart-pie"></i> Charts</a>
+    <a href="../staff-login.html"><i class="fa-solid fa-person-running"></i>Logout</a>
 </div>
 
 <div class="content-area">
 
     <!-- TOP BAR -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Welcome back, <span id="admin-name" style="text-transform: uppercase;">Admin</span> 👋</h2>
-        <button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+    <h2>Welcome back, <span id="admin-name" style="text-transform: uppercase;">ADMIN</span></h2>
+
+    <!-- USER -->
+    <div class="dropdown">
+        <button class="btn btn-light" type="button" onclick="window.location.href='admin-profile.html'">
+            <i class="fa fa-user-circle fa-3x"></i>
+        </button>
     </div>
+</div>
 
     <!-- STAT CARDS -->
     <div class="row g-3">
@@ -88,7 +95,6 @@
         </div>
     </div>
 
-    <hr class="my-4">
 
     <!-- CHART AREA -->
 
