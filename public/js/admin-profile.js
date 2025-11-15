@@ -6,10 +6,10 @@ if (!admin) {
 }
 
 async function loadProfile() {
-    const res = await fetch("http://localhost:3000/api/admin/profile/" + admin.id);
+    const res = await fetch("http://localhost:3000/api/admin/profile/" + admin.user_id);
     const data = await res.json();
 
-    document.getElementById("username").value = data.name;
+    document.getElementById("username").value = data.username;
     document.getElementById("email").value = data.email;
 }
 
