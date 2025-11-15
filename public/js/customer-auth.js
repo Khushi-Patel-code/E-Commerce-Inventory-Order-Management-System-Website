@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.token) {
                 localStorage.setItem('token', result.token);
                 alert('Login successful!');
-                window.location.href = 'products.html';
+                window.location.href = 'customer-dashboard.html';
             } else if (result.errors) {
                 alert(result.errors.map(err => err.msg).join('\n'));
             } else {

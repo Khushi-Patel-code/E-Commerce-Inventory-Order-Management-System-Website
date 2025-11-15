@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Customer Dashboard</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body { background:#f8f9fa; }
+    .topbar { background: white; box-shadow: 0 1px 6px rgba(0,0,0,0.06); }
+    .container-small { max-width:1200px; margin: 24px auto; }
+    .table-wrap { overflow-x:auto; }
+
+    /* user avatar circle */
+    .user-circle {
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:600;
+      color:white;
+      background:#6c757d;
+      text-transform:uppercase;
+      cursor:pointer;
+    }
+
+    /* product card */
+    .product-card { width: 100%; }
+    .product-img { height:160px; object-fit:cover; background:#eee; }
+    .section-title { margin-bottom:12px; }
+
+    /* responsive grid */
+    .cards-row { gap:1rem; display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+
+    /* small helpers */
+    .muted-small { font-size:0.85rem; color:#6c757d; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="topbar py-2">
+    <div class="container d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <a href="/" class="text-decoration-none fs-5"><strong>MyShop</strong></a>
+        <!-- Main nav links -->
+        <ul class="nav">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/products.html">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="/orders.html">My Orders</a></li>
+
+          <!-- Categories dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
+            <ul class="dropdown-menu" aria-labelledby="categoriesDropdown" id="categoriesMenu">
+              <!-- categories inserted dynamically or manually -->
+              <li><a class="dropdown-item" href="#">Electronics</a></li>
+              <li><a class="dropdown-item" href="#">Apparel</a></li>
+              <li><a class="dropdown-item" href="#">Home</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/categories.html">View all categories</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <div class="d-flex align-items-center gap-3">
+        <!-- Welcome text -->
+        <div id="welcomeText" class="me-2 muted-small">Welcome!</div>
+
+        <!-- user avatar / dropdown -->
+        <div class="dropdown">
+          <div id="userAvatar" class="user-circle dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Account">
+            <!-- initials inserted dynamically -->
+            <span id="avatarInitials">U</span>
+          </div>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a id="profileLink" class="dropdown-item" href="/profile.html">Profile &amp; Settings</a></li>
+            <li><a class="dropdown-item" href="/orders.html">My Orders</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a id="logoutSmall" class="dropdown-item text-danger" href="#">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="container container-small">
+    <!-- Greeting area + quick actions -->
+    <div class="d-flex justify-content-between align-items-center my-4">
+      <div>
+        <h4 id="greetingMessage" class="mb-1">Hello!</h4>
+        <div class="muted-small" id="greetingSub">Here's what's new for you.</div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button id="btnViewProducts" class="btn btn-outline-primary btn-sm">View Products</button>
+        <button id="btnMyOrders" class="btn btn-outline-secondary btn-sm">My Orders</button>
+      </div>
+    </div>
+
+    <!-- Featured products -->
+    <section aria-labelledby="featuredTitle" class="mb-4">
+      <div class="d-flex justify-content-between align-items-end">
+        <h5 id="featuredTitle" class="section-title">Featured products</h5>
+        <small class="muted-small">Hand-picked just for you</small>
+      </div>
+
+      <div class="card p-3 mb-3">
+        <div class="cards-row" id="featuredCards">
+          <!-- placeholder cards -->
+          <div class="card product-card">
+            <img class="card-img-top product-img" src="https://via.placeholder.com/400x200?text=Product+1" alt="Product 1">
+            <div class="card-body">
+              <h6 class="card-title">Product 1</h6>
+              <p class="card-text muted-small">Short description of product 1. Price: $12.99</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="btn btn-sm btn-primary">View</a>
+                <small class="text-muted">In stock</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="card product-card">
+            <img class="card-img-top product-img" src="https://via.placeholder.com/400x200?text=Product+2" alt="Product 2">
+            <div class="card-body">
+              <h6 class="card-title">Product 2</h6>
+              <p class="card-text muted-small">Short description of product 2. Price: $24.50</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="btn btn-sm btn-primary">View</a>
+                <small class="text-muted">Low stock</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="card product-card">
+            <img class="card-img-top product-img" src="https://via.placeholder.com/400x200?text=Product+3" alt="Product 3">
+            <div class="card-body">
+              <h6 class="card-title">Product 3</h6>
+              <p class="card-text muted-small">Short description of product 3. Price: $7.00</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="btn btn-sm btn-primary">View</a>
+                <small class="text-muted">In stock</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- more placeholders can be added... -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories preview -->
+    <section class="mb-4">
+      <div class="d-flex justify-content-between align-items-end">
+        <h5 class="section-title">Categories</h5>
+        <small class="muted-small">Click a category to view</small>
+      </div>
+
+      <div class="card p-3">
+        <div class="d-flex flex-wrap gap-2">
+          <button class="btn btn-outline-secondary btn-sm category-btn" data-cat="electronics">Electronics</button>
+          <button class="btn btn-outline-secondary btn-sm category-btn" data-cat="apparel">Apparel</button>
+          <button class="btn btn-outline-secondary btn-sm category-btn" data-cat="home">Home</button>
+          <button class="btn btn-outline-secondary btn-sm category-btn" data-cat="sports">Sports</button>
+          <button class="btn btn-outline-secondary btn-sm category-btn" data-cat="beauty">Beauty</button>
+          <button class="btn btn-outline-secondary btn-sm category-btn" data-cat="all">All categories</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- quick stats or announcements (placeholder) -->
+    <section class="mb-4">
+      <h5 class="section-title">Quick overview</h5>
+      <div class="row">
+        <div class="col-sm-4 mb-3">
+          <div class="card p-3 h-100">
+            <div class="muted-small">Orders (30 days)</div>
+            <h3>12</h3>
+            <small class="muted-small">View recent activity</small>
+          </div>
+        </div>
+        <div class="col-sm-4 mb-3">
+          <div class="card p-3 h-100">
+            <div class="muted-small">Saved items</div>
+            <h3>4</h3>
+            <small class="muted-small">Manage wishlist</small>
+          </div>
+        </div>
+        <div class="col-sm-4 mb-3">
+          <div class="card p-3 h-100">
+            <div class="muted-small">Notifications</div>
+            <h3>2</h3>
+            <small class="muted-small">See alerts</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // // require token to be signed in
+    // const token = localStorage.getItem('customer_token');
+    // if (!token) {
+    //   // not signed in → go to login
+    //   window.location.href = '/customer-login.html';
+    // }
+
+    // Helpers
+    function parseJwt (token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function setGreeting(name) {
+      const short = name?.split(' ')[0] || name || 'Customer';
+      document.getElementById('greetingMessage').textContent = `Welcome back, ${short} 👋`;
+      document.getElementById('greetingSub').textContent = `Good to see you — here's a quick look at your account.`;
+      document.getElementById('welcomeText').textContent = `Hi ${short}`;
+      // avatar initials
+      const initials = short.split(' ').map(s => s[0]).slice(0,2).join('').toUpperCase() || 'U';
+      document.getElementById('avatarInitials').textContent = initials;
+    }
+
+    // Try to fetch /customers/me for name (preferred). If not available, try parse JWT.
+    (async function loadProfileName() {
+      let name = null;
+
+      // preferred: backend endpoint that returns customer details
+      try {
+        const res = await fetch('/customers/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const json = await res.json();
+          // expecting { success:true, data: { first_name, last_name, ... } }
+          if (json && json.data) {
+            name = `${json.data.first_name || ''} ${json.data.last_name || ''}`.trim();
+          }
+        }
+      } catch (err) {
+        // ignore — fallback to JWT
+        // console.info('customers/me not available', err);
+      }
+
+      if (!name) {
+        const payload = parseJwt(token);
+        if (payload && (payload.first_name || payload.name)) {
+          name = payload.first_name || payload.name;
+        } else if (payload && payload.id) {
+          name = `User${payload.id}`;
+        }
+      }
+
+      setGreeting(name || 'Customer');
+    })();
+
+    // Logout handlers
+    document.getElementById('logoutSmall').addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('customer_token');
+      window.location.href = '/customer-login.html';
+    });
+
+    // quick navigation buttons
+    document.getElementById('btnViewProducts').addEventListener('click', () => {
+      window.location.href = '/products.html';
+    });
+    document.getElementById('btnMyOrders').addEventListener('click', () => {
+      window.location.href = '/orders.html';
+    });
+
+    // Category buttons: for now they are placeholders that redirect to categories page with query param
+    document.querySelectorAll('.category-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cat = btn.dataset.cat || 'all';
+        // example path: /categories.html?cat=electronics
+        window.location.href = `/categories.html?cat=${encodeURIComponent(cat)}`;
+      });
+    });
+
+    // If you later want to load real featured products from backend:
+    // 1) create GET /api/products?featured=1 or GET /api/products/featured
+    // 2) uncomment the function below and populate #featuredCards with actual data
+    /*
+    async function loadFeaturedFromApi() {
+      const res = await fetch('/api/products/featured'); // adjust endpoint
+      if (!res.ok) return;
+      const json = await res.json();
+      // build cards and put into #featuredCards
+    }
+    loadFeaturedFromApi();
+    */
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
