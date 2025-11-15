@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Orders</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f8f9fc;
+        }
+        .sidebar {
+            height: 100vh;
+            width: 230px;
+            background: #343a40;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: white;
+            padding: 12px;
+            display: block;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background: #495057;
+        }
+        .content-area {
+            margin-left: 230px;
+            padding: 20px;
+        }
+        table th, table td {
+            vertical-align: middle !important;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar position-fixed">
+    <h4 class="text-center text-white">Admin Panel</h4>
+
+    <a href="admin-dashboard.html"><i class="fa fa-home me-2"></i> Dashboard</a>
+    <a href="admin-products.html"><i class="fa fa-box me-2"></i> Products</a>
+    <a href="admin-orders.html" style="background:#495057;"><i class="fa fa-shopping-cart me-2"></i> Orders</a>
+    <a href="admin-users.html"><i class="fa fa-users me-2"></i> Users</a>
+    <a href="admin-views.html"><i class="fa fa-table me-2"></i> SQL Views</a>
+    <a href="admin-reports.html"><i class="fa fa-chart-line me-2"></i> Reports</a>
+    <a href="admin-charts.html"><i class="fa fa-chart-pie me-2"></i> Charts</a>
+    <a href="../staff-login.html"><i class="fa-solid fa-person-running me-2"></i> Logout</a>
+</div>
+
+<!-- CONTENT PANEL -->
+<div class="content-area">
+
+    <!-- Top Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa fa-shopping-cart"></i> Orders</h2>
+
+        <button class="btn btn-light" onclick="window.location.href='admin-profile.html'">
+            <i class="fa fa-user-circle fa-2x"></i>
+        </button>
+    </div>
+
+    <!-- ACTION CARD -->
+    <div class="card shadow-sm p-4">
+
+        <!-- Search Row -->
+        <div class="d-flex mb-3">
+            <input id="searchOrderId" class="form-control me-2" placeholder="Search Order ID">
+            <button class="btn btn-dark" onclick="searchOrderById()"><i class="fa fa-search"></i></button>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mb-3">
+            <button class="btn btn-primary me-2" onclick="loadOrders()">Load Recent Orders</button>
+            <button class="btn btn-success me-2" onclick="exportCSV()">Export CSV</button>
+            <button class="btn btn-danger" onclick="exportPDF()">Export PDF</button>
+        </div>
+
+        <div id="status" class="text-muted mb-2"></div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead id="ordersHead"></thead>
+                <tbody id="ordersBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+//    CONFIG
+
+const API_BASE = "http://localhost:3000/api/orders";
+
+/* ---------------------------
+    1. LOAD RECENT ORDERS
+-----------------------------*/
+async function loadOrders() {
+    document.getElementById("status").innerText = "Loading...";
+
+    const res = await fetch(`${API_BASE}`);
+    const json = await res.json();
+
+    if (!json.success) return;
+
+    const rows = json.data.slice(0, 10); // show only last 10
+
+    let head = `
+        <tr class="table-dark">
+            <th>ID</th>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Actions</th>
+        </tr>
+    `;
+
+    let body = "";
+    rows.forEach(o => {
+        body += `
+            <tr>
+                <td>${o.order_id}</td>
+                <td>${o.order_number}</td>
+                <td>${o.customer_first_name} ${o.customer_last_name}</td>
+                <td>${o.order_status}</td>
+                <td>${new Date(o.order_date).toLocaleString()}</td>
+                <td>$${o.total}</td>
+                <td>
+                    <button class="btn btn-sm btn-info me-1" onclick="viewOrder(${o.order_id})">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteOrder(${o.order_id})">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("ordersHead").innerHTML = head;
+    document.getElementById("ordersBody").innerHTML = body;
+    document.getElementById("status").innerText = "Showing recent 10 orders.";
+}
+
+/* ---------------------------
+    2. SEARCH ORDER BY ID
+-----------------------------*/
+async function searchOrderById() {
+    const id = document.getElementById("searchOrderId").value;
+
+    if (!id) return alert("Enter an Order ID!");
+
+    const res = await fetch(`${API_BASE}/${id}`);
+    const json = await res.json();
+
+    if (!json.success) {
+        alert("Order not found");
+        return;
+    }
+
+    const o = json.data;
+
+    document.getElementById("ordersHead").innerHTML = `
+        <tr class="table-dark">
+            <th>ID</th><th>Order #</th><th>Customer</th><th>Status</th><th>Date</th><th>Total</th>
+        </tr>
+    `;
+
+    document.getElementById("ordersBody").innerHTML = `
+        <tr>
+            <td>${o.order_id}</td>
+            <td>${o.order_number}</td>
+            <td>${o.customer_first_name} ${o.customer_last_name}</td>
+            <td>${o.order_status}</td>
+            <td>${new Date(o.order_date).toLocaleString()}</td>
+            <td>$${o.total}</td>
+        </tr>
+    `;
+}
+
+/* ---------------------------
+    3. DELETE ORDER
+-----------------------------*/
+async function deleteOrder(id) {
+    if (!confirm("Are you sure you want to delete this order?")) return;
+
+    const res = await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
+    const json = await res.json();
+
+    alert(json.message);
+    loadOrders();
+}
+
+/* ---------------------------
+    4. VIEW ORDER (TEMP)
+-----------------------------*/
+function viewOrder(id) {
+}
+
+/* ---------------------------
+    5. EXPORT CSV
+-----------------------------*/
+function exportCSV() {
+    window.location.href = `${API_BASE}/export/csv`;
+}
+
+/* ---------------------------
+    6. EXPORT PDF
+-----------------------------*/
+function exportPDF() {
+    window.location.href = `${API_BASE}/export/pdf`;
+}
+</script>
+
+</body>
+</html>
