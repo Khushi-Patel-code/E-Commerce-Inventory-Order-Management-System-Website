@@ -31,6 +31,9 @@
             margin-left: 230px;
             padding: 20px;
         }
+        a{
+            text-decoration: none;
+        }
     </style>
 
 </head>
