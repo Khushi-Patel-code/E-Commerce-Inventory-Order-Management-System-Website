@@ -1,0 +1,120 @@
+body {
+    font-family: 'Monsterrat', sans-serif;
+    background: linear-gradient(to top, #C471ED, #301934);
+    background-repeat: no-repeat, repeat;
+    background-size: 100%, 200%;
+    color: #FAF9F9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #C471ED, #301934);
+    background-size: 100% 100%;
+    opacity: 1;
+    z-index: -2;
+    animation: pulseGradient 6s ease-in-out infinite;
+    transition: opacity 0.5s ease-in-out;
+
+}
+
+body::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url('sketchFloat2.gif') repeat center;
+    background-size: 1450px;
+    opacity: 0.5;
+    animation: fadeSketches 6s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes pulseGradient {
+    0% {
+        background-size: 100% 100%;
+        opacity: 1;
+    }
+    40% {
+        background-size: 100% 140%;
+        opacity: 0.05;
+    }
+    60% {
+        background-size: 100% 140%;
+        opacity: 0.05;
+    }
+    100% {
+        background-size: 100% 100%;
+        opacity: 1;
+    }
+}
+
+@keyframes fadeSketches {
+    0%, 100% { opacity: 0.3;}
+    50% { opacity: 0.5; }
+}
+
+.login-box {
+    background: #4F225E;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 320px;
+    animation: fadeIn 1s ease-out;
+}
+
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-box form {
+    display: flex;
+    flex-direction: column; /*Stacks inputs vertically*/
+}
+
+.login-box input {
+    margin: 10px 0;
+    padding: 12px;
+    border: 1px solid #FFFFFF;
+    border-radius: 4px;
+}
+
+.login-box button {
+    margin-top: 15px;
+    padding: 12px;
+    background: #AA3868;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-box button:hover {
+    background: #EF476F
+}
+
+.login-box p {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.login-box a {
+    color: #AA3868;
+    text-decoration: none;
+}
+
+.login-box a:hover {
+    text-decoration: underline;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

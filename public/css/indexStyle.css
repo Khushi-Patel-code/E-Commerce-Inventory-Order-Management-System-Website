@@ -1,0 +1,77 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(to top, #C471ED, #301934);
+    background-repeat: no-repeat, repeat;
+    background-size: 100%, 200%;
+    color: #FAF9F9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #C471ED, #301934);
+    background-size: 100% 100%;
+    opacity: 1;
+    z-index: -2;
+    animation: pulseGradient 6s ease-in-out infinite;
+    transition: opacity 0.5s ease-in-out;
+}
+
+body::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url('sketchFloat2.gif') repeat center;
+    background-size: 1450px;
+    opacity: 0.5;
+    animation: fadeSketches 6s ease-in-out infinite;
+    z-index: -1;
+}
+
+.role-box {
+    background: #4F225E;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    width: 360px;
+    max-width: 90%;
+    text-align: center;
+    animation: fadeIn 1s ease-out;
+}
+
+.role-box h2 {
+    margin-bottom: 25px;
+    font-size: 1.4rem;
+    color: #FAF9F9;
+}
+
+.role-box button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    background: #AA3868;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.role-box button:hover {
+    background: #EF476F;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

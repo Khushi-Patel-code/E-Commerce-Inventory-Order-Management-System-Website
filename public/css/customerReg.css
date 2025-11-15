@@ -1,0 +1,130 @@
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top:2px;
+}
+
+body {
+    font-family: 'Monsterrat', sans-serif;
+    background: linear-gradient( to top, #C471ED, #301934);
+    background-repeat: no-repeat, repeat;
+    background-size: 100%, 200%;
+    color: #faf9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #C471ED, #301934);
+    background-size: 100% 100%;
+    opacity: 1;
+    z-index: -2;
+    animation: pulseGradient 6s ease-in-out infinite;
+    transition: opacity 0.5s ease-in-out;
+}
+
+body::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url('sketchFloat2.gif') repeat center;
+    background-size: 1450px;
+    opacity: 0.5;
+    animation: fadeSketches 6s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes pulseGradient {
+    0% {
+        background-size: 100% 100%;
+        opacity: 1;
+    }
+    40% {
+        background-size: 100% 140%;
+        opacity: 0.05;
+    }
+    60% {
+        background-size: 100% 140%;
+        opacity: 1;
+    }
+    100% {
+        background-size: 100% 100%;
+        opacity: 1;
+    }
+}
+
+@keyframes fadeSketches {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.5; }
+}
+
+.register-box {
+    background: #4F225E;
+    padding: 35px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
+    width: 360px;
+    max-width: 90%;
+    animation: fadeIn 1s ease-out;
+}
+
+.register-box h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.4rem;
+    color: #FAF9F9;
+}
+
+.register-box form {
+    display: flex;
+    flex-direction: column;
+}
+
+.register-box input {
+    margin: 10px 0;
+    padding: 12px;
+    border: 1px solid #FFFFFF;
+    border-radius: 4px;
+    background: #FFFFFF;
+    color: #4F225E;
+    font-weight: 500;
+}
+
+.register-box input::placeholder {
+    color: #B0B0B0;
+}
+
+.register-box button {
+    margin-top: 20px;
+    padding: 12px;
+    background: #AA3868;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.register-box button:hover {
+    background: #EF476F;
+}
+
+.error-message {
+    font-size: 0.8rem;
+    color: #FF6EC7;
+    margin-bottom: 5px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
