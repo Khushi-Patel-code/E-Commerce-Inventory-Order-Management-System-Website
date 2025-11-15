@@ -4,6 +4,7 @@
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
     "chart.js": "^4.5.1",
+    "connect": "^3.7.0",
     "connect-flash": "^0.1.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -19,7 +20,7 @@
     "pdfkit": "^0.17.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.11"
   },
   "name": "final-project",
   "version": "1.0.0",

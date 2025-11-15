@@ -1,14 +1,51 @@
-// routes/categories.js
 const express = require('express');
 const router = express.Router();
+
 const categoryController = require('../controllers/categoriesController');
+const handleValidation = require("../validators/handleValidation");
 
-router.post('/', categoryController.createCategory);
+const {
+  createCategoryValidator,
+  updateCategoryValidator,
+  idValidator
+} = require("../validators/categoryValidator");
+
+// CREATE
+router.post(
+  '/',
+  createCategoryValidator,
+  handleValidation,
+  categoryController.createCategory
+);
+
+// READ ALL
 router.get('/', categoryController.getCategories);
-router.get('/:id', categoryController.getCategoryById);
-router.put('/:id', categoryController.updateCategory);
-router.delete('/:id', categoryController.deleteCategory);
 
+// READ ONE
+router.get(
+  '/:id',
+  idValidator,
+  handleValidation,
+  categoryController.getCategoryById
+);
+
+// UPDATE
+router.put(
+  '/:id',
+  updateCategoryValidator,
+  handleValidation,
+  categoryController.updateCategory
+);
+
+// DELETE
+router.delete(
+  '/:id',
+  idValidator,
+  handleValidation,
+  categoryController.deleteCategory
+);
+
+// EXPORTS (no validation needed)
 router.get("/export/csv", categoryController.exportCategoriesCSV);
 router.get("/export/pdf", categoryController.exportCategoriesPDF);
 

@@ -11,9 +11,22 @@
   <h2>Add Customer</h2>
   <form id="createCustomerForm">
     <input type="text" id="first_name" placeholder="First Name" required><br>
-    <input type="text" id="last_name" placeholder="Last Name" required><br>
+    <input type="text" id="last_name" placeholder="Last Last Name" required><br>
+
     <input type="email" id="email" placeholder="Email" required><br>
-    <input type="password" id="password" placeholder="Password" required><br>
+    <span id="email-error" style="color:red;"></span><br>
+
+    <input 
+      type="password" 
+      id="password" 
+      placeholder="Password" 
+      required 
+      minlength="6"
+      oninvalid="this.setCustomValidity('Password must be at least 6 characters long')" 
+      oninput="this.setCustomValidity('')" 
+    ><br>
+    <span id="password-error" style="color:red;"></span><br>
+
     <input type="text" id="phone" placeholder="Phone"><br>
     <input type="text" id="billing_address" placeholder="Billing Address"><br>
     <input type="text" id="shipping_address" placeholder="Shipping Address"><br>
@@ -89,6 +102,22 @@
     });
 
     let data = await res.json();
+
+    // Clear old errors
+    document.getElementById("email-error").textContent = "";
+    document.getElementById("password-error").textContent = "";
+
+    // Display backend validation errors
+    if (data.errors) {
+      if (data.errors.email) {
+        document.getElementById("email-error").textContent = data.errors.email;
+      }
+      if (data.errors.password) {
+        document.getElementById("password-error").textContent = data.errors.password;
+      }
+      return; // prevent success alert
+    }
+
     alert(data.message || "Customer Added!");
   });
 

@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
+            if (!registerForm.checkValidity()){
+                //let browser show its native warnings
+                return;
+            }
             e.preventDefault();
             const formData = new FormData(registerForm);
             const data = Object.fromEntries(formData.entries());
@@ -25,8 +29,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if(!res.ok){
                 const error = await res.json();
+
+                //clear old messages
+                document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+
                 console.error('Server error', error);
-                alert(error.message || 'Registration failed');
+
+                if (error.errors) {
+                    error.errors.forEach(e => {
+                        const fieldError = document.getElementById(`$e.field}Error`);
+                        if (fieldError) {
+                            fieldError.textContent = e.message;
+                        }
+                    });
+                } else {
+                    alert(err.message || 'Registration failed');
+                }
                 return;
             }
             const result = await res.json();
@@ -56,10 +74,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('token', result.token);
                 alert('Login successful!');
                 window.location.href = 'products.html';
+            } else if (result.errors) {
+                alert(result.errors.map(err => err.msg).join('\n'));
             } else {
                 alert(result.message || 'Login failed');
             }
         });
     }
 });
-

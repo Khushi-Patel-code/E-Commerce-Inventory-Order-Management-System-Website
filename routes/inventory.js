@@ -1,12 +1,16 @@
-// routes/inventory.js
 const express = require('express');
 const router = express.Router();
 const inventoryController = require('../controllers/inventoryController');
 
-router.post('/', inventoryController.createInventory);
+const {
+  validateCreateInventory,
+  validateUpdateInventory
+} = require('../validators/inventoryValidator');
+
+router.post('/', validateCreateInventory, inventoryController.createInventory);
 router.get('/', inventoryController.getInventory);
 router.get('/:id', inventoryController.getInventoryById);
-router.put('/:id', inventoryController.updateInventory);
+router.put('/:id', validateUpdateInventory, inventoryController.updateInventory);
 router.delete('/:id', inventoryController.deleteInventory);
 
 // Export to PDF/CSV

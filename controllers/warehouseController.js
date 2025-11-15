@@ -1,5 +1,5 @@
 // controllers/warehouseController.js
-const pool = require('../db/connection');
+const pool = require('../db/connection'); // your pool/connection module
 const { Parser } = require('json2csv');
 const PDFDocument = require('pdfkit');
 
@@ -8,7 +8,7 @@ const PDFDocument = require('pdfkit');
 // Get all warehouses
 exports.getAllWarehouses = async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM warehouses');
+    const [rows] = await pool.query('SELECT * FROM warehouses');
     res.json({ success: true, data: rows });
   } catch (err) {
     console.error('Error fetching warehouses:', err.message);
@@ -20,7 +20,7 @@ exports.getAllWarehouses = async (req, res) => {
 exports.getWarehouseById = async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await db.query(
+    const [rows] = await pool.query(
       'SELECT warehouse_id, warehouse_name, location, contact_phone, created_at FROM warehouses WHERE warehouse_id = ?',
       [id]
     );
@@ -37,13 +37,17 @@ exports.getWarehouseById = async (req, res) => {
 // Create warehouse
 exports.createWarehouse = async (req, res) => {
   try {
-    const { warehouse_name, location, contact_phone } = req.body;
+    // inputs have been validated & trimmed by express-validator middleware
+    const warehouse_name = req.body.warehouse_name;
+    const location = req.body.location ?? null;
+    const contact_phone = req.body.contact_phone ?? null;
 
-    if (!warehouse_name) {
+    // double-check required field (defensive)
+    if (!warehouse_name || String(warehouse_name).trim().length === 0) {
       return res.status(400).json({ success: false, message: 'Warehouse name is required' });
     }
 
-    await db.query(
+    await pool.query(
       'INSERT INTO warehouses (warehouse_name, location, contact_phone) VALUES (?, ?, ?)',
       [warehouse_name, location, contact_phone]
     );
@@ -58,17 +62,18 @@ exports.createWarehouse = async (req, res) => {
 // Update warehouse
 exports.updateWarehouse = async (req, res) => {
   const { id } = req.params;
+  // express-validator sanitized/trimmed fields are in req.body
   const { warehouse_name, location, contact_phone } = req.body;
 
   try {
-    const [result] = await db.query(
+    const [result] = await pool.query(
       `UPDATE warehouses
        SET
          warehouse_name = COALESCE(?, warehouse_name),
          location = COALESCE(?, location),
          contact_phone = COALESCE(?, contact_phone)
        WHERE warehouse_id = ?`,
-      [warehouse_name, location, contact_phone, id]
+      [warehouse_name ?? null, location ?? null, contact_phone ?? null, id]
     );
 
     if (result.affectedRows === 0)
@@ -85,7 +90,7 @@ exports.updateWarehouse = async (req, res) => {
 exports.deleteWarehouse = async (req, res) => {
   const { id } = req.params;
   try {
-    const [result] = await db.query('DELETE FROM warehouses WHERE warehouse_id = ?', [id]);
+    const [result] = await pool.query('DELETE FROM warehouses WHERE warehouse_id = ?', [id]);
     if (result.affectedRows === 0)
       return res.status(404).json({ success: false, message: 'Warehouse not found' });
 
@@ -95,7 +100,6 @@ exports.deleteWarehouse = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to delete warehouse' });
   }
 };
-
 
 // EXPORT WAREHOUSE CSV
 exports.exportWarehousesCSV = async (req, res) => {
@@ -217,4 +221,3 @@ exports.exportWarehousesPDF = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to export warehouse PDF" });
   }
 };
-

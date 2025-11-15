@@ -1,15 +1,14 @@
-// routes/payments.js
 const express = require('express');
 const router = express.Router();
 const paymentController = require('../controllers/paymentController');
+const { validateCreatePayment, validateUpdatePayment } = require('../validators/paymentValidator');
 
-router.post('/', paymentController.createPayment);
+router.post('/', validateCreatePayment, paymentController.createPayment);
 router.get('/', paymentController.getPayments);
 router.get('/:id', paymentController.getPaymentById);
-router.put('/:id', paymentController.updatePayment);
+router.put('/:id', validateUpdatePayment, paymentController.updatePayment);
 router.delete('/:id', paymentController.deletePayment);
 
-// Export to PDF/CSV
 router.get("/export/csv", paymentController.exportPaymentsCSV);
 router.get("/export/pdf", paymentController.exportPaymentsPDF);
 
