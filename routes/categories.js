@@ -49,4 +49,6 @@ router.delete(
 router.get("/export/csv", categoryController.exportCategoriesCSV);
 router.get("/export/pdf", categoryController.exportCategoriesPDF);
 
+
+
 module.exports = router;

@@ -12,9 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const result = await res.json();
+
             if (result.token) {
-                localStorage.setItem('token', result.token);
+                localStorage.setItem("token", result.token);
+                localStorage.setItem("admin", JSON.stringify(result.admin));
+
                 alert('Login successful!');
+
+                // Redirect to admin dashboard
+                window.location.href = "/admin/admin-dashboard.html";
+
             } else {
                 alert(result.message || 'Login failed');
             }

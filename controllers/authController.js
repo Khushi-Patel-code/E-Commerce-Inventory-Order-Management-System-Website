@@ -4,7 +4,7 @@ const db = require('../db/connection');
 
 exports.registerUser = async (req, res) => {
     try {
-        const { first_name, last_name, email, password, role_id } = req.body;
+        const { username, first_name, last_name, email, password, role_id } = req.body;
 
         // Fix — Default role if not provided
         const roleId = role_id || 1; // 1 = user (or whatever default role you use)
@@ -21,8 +21,8 @@ exports.registerUser = async (req, res) => {
         const password_hash = await bcrypt.hash(password, 10);
 
         await db.query(
-            'INSERT INTO users (first_name, last_name, email, password_hash, role_id) VALUES (?, ?, ?, ?, ?)',
-            [first_name, last_name, email, password_hash, roleId]
+            'INSERT INTO users (username, first_name, last_name, email, password_hash, role_id) VALUES (?, ?, ?, ?, ?, ?)',
+            [username, first_name, last_name, email, password_hash, roleId]
         );
 
         res.json({ message: 'User registered successfully' });
@@ -34,12 +34,9 @@ exports.registerUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-    console.log('Incoming login payload:', req.body);
-
     try {
         const { email, password } = req.body;
 
-        // Fix #1 — Validation
         if (!email || !password) {
             return res.status(400).json({ message: 'Email and password required' });
         }
@@ -52,14 +49,10 @@ exports.loginUser = async (req, res) => {
         const user = rows[0];
 
         if (!user) {
-            console.log('User not found');
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
         const passwordMatch = await bcrypt.compare(password, user.password_hash);
-
-        console.log('Stored hash:', user.password_hash);
-        console.log('Password match:', passwordMatch);
 
         if (!passwordMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
@@ -76,7 +69,16 @@ exports.loginUser = async (req, res) => {
             [user.user_id]
         );
 
-        res.json({ token, role: user.role_name });
+        res.json({
+            success: true,
+            admin: {
+                id: user.user_id,
+                name: user.username,
+                email: user.email,
+                role: user.role_name
+            },
+            token
+        });
 
     } catch (err) {
         console.error('User login error:', err.message);
