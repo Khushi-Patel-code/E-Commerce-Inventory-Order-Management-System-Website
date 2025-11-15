@@ -1,28 +1,65 @@
-// Load admin name
-const admin = JSON.parse(localStorage.getItem("admin"));
-if (admin) {
-    document.getElementById("admin-name").textContent = admin.name;
-}
+document.addEventListener("DOMContentLoaded", () => {
+    loadAdminName();
+    loadDashboardCounts();
+});
 
-// FETCH STATS EXAMPLE
-async function loadStats() {
-    try {
-        const res = await fetch("http://localhost:3000/api/admin/stats");
-        const data = await res.json();
-
-        document.getElementById("count-products").textContent = data.products;
-        document.getElementById("count-categories").textContent = data.categories;
-        document.getElementById("low-stock").textContent = data.lowStock;
-        document.getElementById("count-orders").textContent = data.orders;
-
-    } catch (err) {
-        console.error("Stats Error:", err);
+function loadAdminName() {
+    const admin = JSON.parse(localStorage.getItem("admin"));
+    if (admin) {
+        document.getElementById("admin-name").textContent =
+            (admin.name || admin.username || "ADMIN").toUpperCase();
     }
 }
 
-loadStats();
+function loadDashboardCounts() {
+    loadRevenue();
+    loadProducts();
+    loadCustomers();
+    loadOrders();
+}
 
-function logout() {
-    localStorage.clear();
-    window.location.href = "staff-login.html";
+// ------------------- API LOADERS ----------------------
+
+function loadRevenue() {
+    fetch("http://localhost:3000/admin/dashboard/revenue")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("count-revenue").textContent = `$${data.revenue}`;
+        })
+        .catch(() => {
+            document.getElementById("count-revenue").textContent = "ERR";
+        });
+}
+
+function loadProducts() {
+    fetch("http://localhost:3000/admin/dashboard/products")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("count-products").textContent = data.totalProducts;
+        })
+        .catch(() => {
+            document.getElementById("count-products").textContent = "ERR";
+        });
+}
+
+function loadCustomers() {
+    fetch("http://localhost:3000/admin/dashboard/customers")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("count-customers").textContent = data.totalCustomers;
+        })
+        .catch(() => {
+            document.getElementById("count-customers").textContent = "ERR";
+        });
+}
+
+function loadOrders() {
+    fetch("http://localhost:3000/admin/dashboard/orders")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("count-orders").textContent = data.totalOrders;
+        })
+        .catch(() => {
+            document.getElementById("count-orders").textContent = "ERR";
+        });
 }
