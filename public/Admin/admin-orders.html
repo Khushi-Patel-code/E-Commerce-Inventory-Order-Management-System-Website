@@ -13,8 +13,10 @@
     <style>
         body { background-color: #f8f9fc; }
         .sidebar {
-            height: 100vh; width: 230px;
-            background: #343a40; padding-top: 20px;
+            height: 100vh; 
+            width: 210px;
+            background: #343a40; 
+            padding-top: 20px;
         }
         .sidebar a {
             color: white; padding: 12px;
@@ -186,7 +188,7 @@ async function loadOrders() {
 
     if (!json.success) return;
 
-    const rows = json.data.slice(0, 20); // show only last 10
+    const rows = json.data // shows all data
 
     let head = `
         <tr class="table-dark">
@@ -227,7 +229,7 @@ async function loadOrders() {
 
     document.getElementById("ordersHead").innerHTML = head;
     document.getElementById("ordersBody").innerHTML = body;
-    document.getElementById("status").innerText = "Showing recent 10 orders.";
+    document.getElementById("status").innerText = "Showing recent orders.";
 }
 
 /* ---------------------------
