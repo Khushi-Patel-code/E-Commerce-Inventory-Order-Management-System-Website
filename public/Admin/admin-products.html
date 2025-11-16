@@ -4,49 +4,34 @@
     <meta charset="UTF-8">
     <title>Admin Products</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-         body {
-            background-color: #f8f9fc;
-        }
+        body { background-color: #f8f9fc; }
         .sidebar {
-            height: 100vh;
-            width: 230px;
-            background: #343a40;
+            height: 100vh; 
+            width: 210px;
+            background: #343a40; 
             padding-top: 20px;
         }
         .sidebar a {
-            color: white;
-            padding: 12px;
-            display: block;
-            text-decoration: none;
+            color: white; padding: 12px;
+            display: block; text-decoration: none;
         }
-        .sidebar a:hover {
-            background: #495057;
-        }
-        .content-area {
-            margin-left: 230px;
-            padding: 20px;
-        }
-        table th, table td {
-            vertical-align: middle !important;
-        }
+        .sidebar a:hover { background: #495057; }
+        .content-area { margin-left: 230px; padding: 20px; }
+        table th, table td { vertical-align: middle !important; }
     </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar position-fixed">
     <h4 class="text-center text-white">Admin Panel</h4>
-
     <a href="admin-dashboard.html"><i class="fa fa-home me-2"></i> Dashboard</a>
-    <a href="admin-products.html"><i class="fa fa-box me-2"></i> Products</a>
+    <a href="admin-products.html" style="background:#495057;"><i class="fa fa-box me-2"></i> Products</a> 
     <a href="admin-orders.html"><i class="fa fa-shopping-cart me-2"></i> Orders</a>
     <a href="admin-users.html"><i class="fa fa-users me-2"></i> Users</a>
     <a href="admin-views.html"><i class="fa fa-table me-2"></i> SQL Views</a>
@@ -55,10 +40,8 @@
     <a href="../staff-login.html"><i class="fa-solid fa-person-running me-2"></i> Logout</a>
 </div>
 
-<!-- CONTENT AREA -->
 <div class="content-area">
 
-    <!-- TOP BAR -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fa fa-box"></i> Products</h2>
 
@@ -67,26 +50,419 @@
         </button>
     </div>
 
-    <!-- PAGE CONTENT -->
     <div class="card shadow-sm p-4">
 
-        <button id="loadProducts" class="btn btn-primary mb-3">
-            <i class="fa fa-sync"></i> Load Products
-        </button>
+        <div class="d-flex mb-3">
+            <input id="searchProductId" class="form-control me-2" placeholder="Search Product ID">
+            <button class="btn btn-dark" onclick="searchProductById()"><i class="fa fa-search"></i></button>
+        </div>
 
-        <div id="status" class="mb-2 text-muted"></div>
+        <div class="mb-3">
+            <button class="btn btn-primary me-2" onclick="loadProducts()">Load Recent Products</button>
+
+            <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                <i class="fa fa-plus"></i> Add Product
+            </button>
+
+            <button class="btn btn-warning me-2" onclick="exportCSV()">Export CSV</button>
+            <button class="btn btn-danger" onclick="exportPDF()">Export PDF</button>
+        </div>
+
+        <div id="status" class="text-muted mb-2"></div>
 
         <div class="table-responsive">
-            <table id="productsTable" class="table table-striped table-bordered" style="display:none;">
+            <table class="table table-striped table-bordered">
                 <thead id="productsHead"></thead>
                 <tbody id="productsBody"></tbody>
             </table>
         </div>
-
     </div>
 </div>
 
-<script src="../js/main.js"></script>
+<div class="modal fade" id="addProductModal">
+    <div class="modal-dialog">
+        <form class="modal-content" onsubmit="submitAddProduct(event)">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <label>SKU</label>
+                <input class="form-control mb-2" name="sku" required>
+
+                <label>Product Name</label>
+                <input class="form-control mb-2" name="product_name" required>
+
+                <label>Description</label>
+                <textarea class="form-control mb-2" name="description"></textarea>
+
+                <label>Category ID (Optional)</label>
+                <input type="number" class="form-control mb-2" name="category_id">
+
+                <label>Price</label>
+                <input type="number" step="0.01" class="form-control mb-2" name="price" required>
+
+                <label>Retail Price (Optional)</label>
+                <input type="number" step="0.01" class="form-control mb-2" name="retail_price">
+
+                <label>Active</label>
+                <select class="form-control mb-2" name="active" required>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary">Add Product</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="updateProductModal">
+    <div class="modal-dialog">
+        <form class="modal-content" onsubmit="submitUpdateProduct(event)">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="update_product_id">
+                
+                <label>SKU</label>
+                <input class="form-control mb-2" id="update_sku" required>
+
+                <label>Product Name</label>
+                <input class="form-control mb-2" id="update_product_name" required>
+
+                <label>Description</label>
+                <textarea class="form-control mb-2" id="update_description"></textarea>
+
+                <label>Category ID (Optional)</label>
+                <input type="number" class="form-control mb-2" id="update_category_id">
+
+                <label>Price</label>
+                <input type="number" step="0.01" class="form-control mb-2" id="update_price" required>
+
+                <label>Retail Price (Optional)</label>
+                <input type="number" step="0.01" class="form-control mb-2" id="update_retail_price">
+
+                <label>Active</label>
+                <select class="form-control mb-2" id="update_active" required>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-warning">Update Product</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+const API_BASE = "http://localhost:3000/api/products";
+
+/* ---------------------------
+    1. LOAD RECENT PRODUCTS
+-----------------------------*/
+async function loadProducts() {
+    document.getElementById("status").innerText = "Loading...";
+
+    const res = await fetch(`${API_BASE}`);
+    const json = await res.json();
+
+    if (!json.success) return;
+
+    const rows = json.data;
+
+    let head = `
+        <tr class="table-dark">
+            <th>ID</th>
+            <th>SKU</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Active</th>
+            <th>Created At</th>
+            <th>Actions</th>
+        </tr>
+    `;
+
+    let body = "";
+    rows.forEach(p => {
+        const displayPrice = p.price != null ? `$${Number(p.price).toFixed(2)}` : 'N/A';
+        const displayCreatedAt = p.created_at ? new Date(p.created_at).toLocaleString() : 'N/A';
+
+        body += `
+            <tr>
+                <td>${p.product_id}</td>
+                <td>${p.sku}</td>
+                <td>${p.product_name}</td>
+                <td>${displayPrice}</td>
+                <td>${p.active == 1 ? 'Yes' : 'No'}</td>
+                <td>${displayCreatedAt}</td>
+                <td>
+                    <button class="btn btn-sm btn-info me-1" onclick="viewProduct(${p.product_id})">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-warning me-1" onclick='openUpdateModal(${JSON.stringify(p)})'>
+                        <i class="fa fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteProduct(${p.product_id})">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("productsHead").innerHTML = head;
+    document.getElementById("productsBody").innerHTML = body;
+    document.getElementById("status").innerText = `Showing ${rows.length} recent products.`;
+}
+
+/* ---------------------------
+    2. SEARCH PRODUCT BY ID
+-----------------------------*/
+async function searchProductById() {
+    const id = document.getElementById("searchProductId").value;
+
+    if (!id) {
+        document.getElementById("status").innerText = "Please enter a Product ID to search.";
+        return;
+    }
+    
+    document.getElementById("status").innerText = `Searching for Product ID: ${id}...`;
+
+    const res = await fetch(`${API_BASE}/${id}`);
+    const json = await res.json();
+
+    if (!json.success) {
+        document.getElementById("status").innerText = `Error: Product ID ${id} not found.`;
+        document.getElementById("productsHead").innerHTML = ''; // Clear table
+        document.getElementById("productsBody").innerHTML = '<tr><td colspan="7" class="text-center">Product not found.</td></tr>';
+        return;
+    }
+
+    const p = json.product;
+    
+    const displayPrice = p.price != null ? `$${Number(p.price).toFixed(2)}` : 'N/A';
+    const displayCreatedAt = p.created_at ? new Date(p.created_at).toLocaleString() : 'N/A';
+
+    document.getElementById("productsHead").innerHTML = `
+        <tr class="table-dark">
+            <th>ID</th>
+            <th>SKU</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Active</th>
+            <th>Created At</th>
+            <th>Actions</th>
+        </tr>
+    `;
+
+    document.getElementById("productsBody").innerHTML = `
+        <tr>
+            <td>${p.product_id}</td>
+            <td>${p.sku}</td>
+            <td>${p.product_name}</td>
+            <td>${displayPrice}</td>
+            <td>${p.active == 1 ? 'Yes' : 'No'}</td>
+            <td>${displayCreatedAt}</td>
+            <td>
+                <button class="btn btn-sm btn-info me-1" onclick="viewProduct(${p.product_id})">
+                    <i class="fa fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-warning me-1" onclick='openUpdateModal(${JSON.stringify(p)})'>
+                    <i class="fa fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteProduct(${p.product_id})">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `;
+    document.getElementById("status").innerText = `Showing product ID: ${p.product_id}`;
+}
+/* ---------------------------
+    3. ADD NEW PRODUCT
+-----------------------------*/
+async function submitAddProduct(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    // FormData will capture all named fields in the form
+    const data = Object.fromEntries(new FormData(form).entries()); 
+
+    // Ensure numeric fields are converted from string (FormData default) to numbers
+    data.category_id = data.category_id ? Number(data.category_id) : null;
+    data.price = Number(data.price);
+    data.retail_price = data.retail_price ? Number(data.retail_price) : null;
+    data.active = Number(data.active);
+
+    const res = await fetch(API_BASE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+
+    const json = await res.json();
+    
+    // Show success/failure modal
+    document.getElementById("successMessage").innerText = json.message || "Product added/failed.";
+    new bootstrap.Modal(document.getElementById("successModal")).show();
+
+    // Close the modal
+    const addModalEl = document.getElementById("addProductModal");
+    const addModal = bootstrap.Modal.getInstance(addModalEl);
+    if (addModal) addModal.hide();
+
+    form.reset();
+    loadProducts();
+}
+
+/* ---------------------------
+    4. OPEN UPDATE MODAL
+-----------------------------*/
+function openUpdateModal(product) {
+    document.getElementById("update_product_id").value = product.product_id;
+    document.getElementById("update_sku").value = product.sku;
+    document.getElementById("update_product_name").value = product.product_name;
+    document.getElementById("update_description").value = product.description || '';
+    document.getElementById("update_category_id").value = product.category_id || '';
+    document.getElementById("update_price").value = product.price;
+    document.getElementById("update_retail_price").value = product.retail_price || '';
+    document.getElementById("update_active").value = product.active;
+
+    new bootstrap.Modal(document.getElementById("updateProductModal")).show();
+}
+
+/* ---------------------------
+    5. SUBMIT UPDATE
+-----------------------------*/
+async function submitUpdateProduct(event) {
+    event.preventDefault();
+
+    const id = document.getElementById("update_product_id").value;
+
+    const data = {
+        sku: document.getElementById("update_sku").value,
+        product_name: document.getElementById("update_product_name").value,
+        description: document.getElementById("update_description").value,
+        category_id: document.getElementById("update_category_id").value || null, // send null if empty
+        price: document.getElementById("update_price").value,
+        retail_price: document.getElementById("update_retail_price").value || null, // send null if empty
+        active: document.getElementById("update_active").value,
+    };
+    
+    // Convert to numbers for the API
+    if (data.category_id !== null) data.category_id = Number(data.category_id);
+    data.price = Number(data.price);
+    if (data.retail_price !== null) data.retail_price = Number(data.retail_price);
+    data.active = Number(data.active);
+
+    const res = await fetch(`${API_BASE}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+
+   const json = await res.json();
+
+    // Show the success/failure modal
+    document.getElementById("successMessage").innerText = json.message || "Product update failed.";
+    new bootstrap.Modal(document.getElementById("successModal")).show();
+
+    // Close the update modal
+    const updateModalEl = document.getElementById("updateProductModal");
+    const updateModal = bootstrap.Modal.getInstance(updateModalEl);
+    if (updateModal) updateModal.hide();
+
+    loadProducts();
+}
+
+
+/* ---------------------------
+    6. DELETE PRODUCT (Open Confirm Modal)
+-----------------------------*/
+function deleteProduct(id) {
+    document.getElementById("delete_product_id").value = id;
+    new bootstrap.Modal(document.getElementById("deleteConfirmModal")).show();
+}
+
+/* ---------------------------
+    7. CONFIRM DELETE
+-----------------------------*/
+async function confirmDelete() {
+    const id = document.getElementById("delete_product_id").value;
+
+    const res = await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
+    const json = await res.json();
+
+    // Close the confirm modal
+    const deleteModalEl = document.getElementById("deleteConfirmModal");
+    const deleteModal = bootstrap.Modal.getInstance(deleteModalEl);
+    if (deleteModal) deleteModal.hide();
+
+    document.getElementById("successMessage").innerText = json.message || "Deletion failed.";
+    new bootstrap.Modal(document.getElementById("successModal")).show();
+
+    loadProducts();
+}
+
+/* ---------------------------
+    8. EXPORT CSV/PDF
+-----------------------------*/
+function exportCSV() { window.location.href = `${API_BASE}/export/csv`; }
+function exportPDF() { window.location.href = `${API_BASE}/export/pdf`; }
+
+// Placeholder for detailed view (if not implemented yet, just alert the ID)
+function viewProduct(id) {
+    alert("Viewing Product ID: " + id);
+}
+
+// Load products when the page finishes loading
+window.onload = loadProducts;
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<div class="modal fade" id="successModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">Status</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="successMessage">
+        Action completed successfully!
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Confirm Delete</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this product?
+        <input type="hidden" id="delete_product_id">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
