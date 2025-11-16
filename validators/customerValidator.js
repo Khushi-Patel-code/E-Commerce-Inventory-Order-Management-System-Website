@@ -23,7 +23,7 @@ exports.registerCustomerValidator = [
 
   body("phone")
     .optional()
-    .isString().withMessage("Phone must be a string"),
+    .matches(/^[0-9+-]+$/).withMessage("Phone can only contain numbers, + and -"),
 
   body("billing_address")
     .optional()
@@ -62,7 +62,7 @@ exports.updateCustomerValidator = [
 
   body("phone")
     .optional()
-    .isString().withMessage("Phone must be a string"),
+    .matches(/^[0-9+-]+$/).withMessage("Phone can only contain numbers, + and -"),
 
   body("billing_address")
     .optional()
