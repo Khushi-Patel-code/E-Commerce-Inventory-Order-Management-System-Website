@@ -441,7 +441,7 @@ async function loadExternalProducts() {
     document.getElementById("status").innerText = "Fetching and saving external products (This might take a few seconds)...";
     
     try {
-        const res = await fetch(`${EXTERNAL_API_BASE}/external/fetch-external-products`, {
+        const res = await fetch(`${EXTERNAL_API_BASE}/fetch-external-products`, {
             method: "POST",
             headers: { "Content-Type": "application/json" }
         });
