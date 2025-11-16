@@ -109,10 +109,9 @@
 
                     <option value="">Select order Status</option>
                     <option>pending</option>
-                    <option>processing</option>
+                    <option>processed</option>
                     <option>shipped</option>
                     <option>delivered</option>
-                    <option>refunded</option>
                     <option value="">cancelled</option>
                 </select>
 
@@ -149,13 +148,13 @@
 
                 <label>Status</label>
                 <select class="form-control mb-2" id="update_status">
-                    <option>pending</option>
-                    <option>processing</option>
-                    <option>shipped</option>
-                    <option>delivered</option>
-                    <option>refunded</option>
-                    <option value="">cancelled</option>
+                    <option value="pending">pending</option>
+                    <option value="processed">processed</option>
+                    <option value="shipped">shipped</option>
+                    <option value="delivered">delivered</option>
+                    <option value="cancelled">cancelled</option>
                 </select>
+
 
                 <label>Shipping Address</label>
                 <input class="form-control mb-2" id="update_shipping_address">
@@ -330,8 +329,17 @@ async function submitUpdateOrder(event) {
         body: JSON.stringify(data)
     });
 
-    const json = await res.json();
-    alert(json.message);
+   const json = await res.json();
+
+    // Show the same success modal
+    document.getElementById("successMessage").innerText = json.message;
+    new bootstrap.Modal(document.getElementById("successModal")).show();
+
+    // Close the update modal
+    const updateModalEl = document.getElementById("updateOrderModal");
+    const updateModal = bootstrap.Modal.getInstance(updateModalEl);
+    if (updateModal) updateModal.hide();
+
     loadOrders();
 }
 function deleteOrder(id) {
