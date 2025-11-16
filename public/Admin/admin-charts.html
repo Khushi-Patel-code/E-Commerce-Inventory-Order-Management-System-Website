@@ -13,8 +13,10 @@
     <style>
         body { background-color: #f8f9fc; }
         .sidebar {
-            height: 100vh; width: 210px;
-            background: #343a40; padding-top: 20px;
+            height: 100vh; 
+            width: 210px;
+            background: #343a40; 
+            padding-top: 20px;
         }
         .sidebar a {
             color: white; padding: 12px;
@@ -38,36 +40,47 @@
     <a href="admin-views.html"><i class="fa fa-table"></i> SQL Views</a>
     <a href="admin-reports.html"><i class="fa fa-chart-line"></i> Reports</a>
     <a href="admin-charts.html"><i class="fa fa-chart-pie"></i> Charts</a>
+    <a href="../staff-login.html"><i class="fa-solid fa-person-running"></i>Logout</a>
 </div>
 
-<div style="padding-left: 250px;">
-  <h2>Charts Overview</h2>
-  <p class="text-muted">Sales, revenue and category performance charts.</p>
-</div>
+<!-- CONTENT PANEL -->
+<div class="content-area">
 
-<div class="row mt-4">
+    <!-- Top Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa fa-chart-pie me-2"></i>Charts Overview</h2>
+
+        <button class="btn btn-light" onclick="window.location.href='admin-profile.html'">
+            <i class="fa fa-user-circle fa-2x"></i>
+        </button>
+    </div>
+
+<!-- Row 1: Chart 1 & Chart 2 -->
+<div class="row mt-4 g-3">
     <div class="col-md-8 chart-container">
         <h4>Revenue vs Date</h4>
         <canvas id="revenueChart"></canvas>
     </div>
-</div>
-<div class="row mt-5">
     <div class="col-md-4 chart-container">
         <h4>Revenue by Category</h4>
         <canvas id="categoryDonut"></canvas>
     </div>
 </div>
 
-<div class="row mt-5">
+<!-- Row 2: Chart 3 under Chart 1 -->
+<div class="row mt-5 g-3">
     <div class="col-md-8 chart-container">
         <h4>Top Selling Products</h4>
         <canvas id="topProducts"></canvas>
+    </div>
+    <div class="col-md-6">
+        <!-- empty to leave space under Chart 2 -->
+    </div>
 </div>
 
 <style>
 .chart-container {
     height: 400px;
-    margin-left: 230px;
 }
 
 .chart-container canvas {

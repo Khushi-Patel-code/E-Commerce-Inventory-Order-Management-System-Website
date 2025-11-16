@@ -26,19 +26,28 @@ fetch('/api/charts/data')
 
     // Revenue by Category
     const categoryCanvas = document.getElementById("categoryDonut");
-    if (categoryCanvas) {
-      new Chart(categoryCanvas, {
-        type: 'doughnut',
-        data: {
-          labels: revenueByCategory.map(c => c.category_name),
-          datasets: [{
-            data: revenueByCategory.map(c => parseFloat(c.revenue)),
-            backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796']
-          }]
-        },
-        options: { responsive: true }
-      });
-    }
+      if (categoryCanvas) {
+          new Chart(categoryCanvas, {
+              type: 'doughnut',
+              data: {
+                  labels: revenueByCategory.map(c => c.category_name),
+                  datasets: [{
+                      data: revenueByCategory.map(c => parseFloat(c.revenue)),
+                      backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796']
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  // 🌟 Key Configuration to move the legend to the bottom
+                  plugins: {
+                      legend: {
+                          position: 'bottom', // Places the legend underneath the chart
+                          align: 'center'     // Optional: Centers the legend horizontally
+                      }
+                  }
+              }
+          });
+      }
 
     // Top Selling Products
     const topProductsCanvas = document.getElementById("topProducts");
