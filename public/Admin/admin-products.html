@@ -64,6 +64,11 @@
                 <i class="fa fa-plus"></i> Add Product
             </button>
 
+            <!-- External API -->
+            <button class="btn btn-info me-2" onclick="loadExternalProducts()">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Load External Products
+            </button>
+
             <button class="btn btn-warning me-2" onclick="exportCSV()">Export CSV</button>
             <button class="btn btn-danger" onclick="exportPDF()">Export PDF</button>
         </div>
@@ -424,6 +429,38 @@ function exportPDF() { window.location.href = `${API_BASE}/export/pdf`; }
 function viewProduct(id) {
     alert("Viewing Product ID: " + id);
 }
+/* ---------------------------
+    9. LOAD AND SAVE EXTERNAL PRODUCTS (NEW)
+-----------------------------*/
+const EXTERNAL_API_BASE = "http://localhost:3000/api/external";
+
+async function loadExternalProducts() {
+    const confirmation = confirm("Are you sure you want to fetch and save products from the external API? This might take a moment.");
+    if (!confirmation) return;
+
+    document.getElementById("status").innerText = "Fetching and saving external products (This might take a few seconds)...";
+    
+    try {
+        const res = await fetch(`${EXTERNAL_API_BASE}/external/fetch-external-products`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        });
+
+        const json = await res.json();
+        
+        //success modal
+        document.getElementById("successMessage").innerText = json.message || json.error || "Operation completed.";
+        new bootstrap.Modal(document.getElementById("successModal")).show();
+
+        loadProducts();
+
+    } catch (err) {
+        console.error('External API fetch error:', err);
+        document.getElementById("status").innerText = "Failed to fetch external products.";
+        document.getElementById("successMessage").innerText = "Error: Failed to connect to or process external products.";
+        new bootstrap.Modal(document.getElementById("successModal")).show();
+    }
+}
 
 // Load products when the page finishes loading
 window.onload = loadProducts;
@@ -463,6 +500,7 @@ window.onload = loadProducts;
     </div>
   </div>
 </div>
+
 
 </body>
 </html>
