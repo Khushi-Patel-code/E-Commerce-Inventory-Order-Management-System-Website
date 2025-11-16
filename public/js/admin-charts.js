@@ -14,7 +14,7 @@ fetch('/api/charts/data')
           datasets: [{
             label: 'Revenue ($)',
             data: revenueVsDate.map(d => parseFloat(d.revenue)),
-            borderColor: '#4e73df',
+            borderColor: '#244fceff',
             backgroundColor: 'rgba(78,115,223,0.2)',
             fill: true,
             tension: 0.4
@@ -38,11 +38,10 @@ fetch('/api/charts/data')
               },
               options: {
                   responsive: true,
-                  // 🌟 Key Configuration to move the legend to the bottom
                   plugins: {
                       legend: {
                           position: 'bottom', // Places the legend underneath the chart
-                          align: 'center'     // Optional: Centers the legend horizontally
+                          align: 'center'   
                       }
                   }
               }
@@ -59,7 +58,7 @@ fetch('/api/charts/data')
           datasets: [{
             label: 'Units Sold',
             data: topProducts.map(p => parseInt(p.units_sold)),
-            backgroundColor: '#1cc88a'
+            backgroundColor: '#8604bdff'
           }]
         },
         options: { indexAxis: 'y', responsive: true, scales: { x: { beginAtZero: true } } }
