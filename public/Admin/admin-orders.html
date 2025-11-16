@@ -68,7 +68,7 @@
         <div class="mb-3">
             <button class="btn btn-primary me-2" onclick="loadOrders()">Load Recent Orders</button>
 
-            <!-- ⭐ ADDED: Add Order Button -->
+            
             <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#addOrderModal">
                 <i class="fa fa-plus"></i> Add Order
             </button>
@@ -121,10 +121,10 @@
                 <input class="form-control mb-2" name="shipping_address">
 
                 <label>Subtotal</label>
-                <input type="number" class="form-control mb-2" name="subtotal">
+                <input type="number" class="form-control mb-2" name="subtotal" step="0.01">
 
                 <label>Total</label>
-                <input type="number" class="form-control mb-2" name="total">
+                <input type="number" class="form-control mb-2" name="total" step="0.01">
 
             </div>
 
@@ -135,7 +135,7 @@
     </div>
 </div>
 
-<!-- ⭐⭐⭐ UPDATE ORDER MODAL ⭐⭐⭐ -->
+<!-- UPDATE ORDER MODal -->
 <div class="modal fade" id="updateOrderModal">
     <div class="modal-dialog">
         <form class="modal-content" onsubmit="submitUpdateOrder(event)">
@@ -162,7 +162,7 @@
                 <input class="form-control mb-2" id="update_shipping_address">
 
                 <label>Total</label>
-                <input type="number" class="form-control mb-2" id="update_total">
+                <input type="number" class="form-control mb-2" id="update_total" step="0.01">
             </div>
 
             <div class="modal-footer">
