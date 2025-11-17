@@ -1,10 +1,13 @@
-// controllers/orderController.js
 const pool = require('../db/connection');
 const { Parser } = require('json2csv');
 const PDFDocument = require('pdfkit');
 
+// Utility: generate unique order number
+function generateOrderNumber() {
+  return 'ORD-' + Date.now();
+}
 
-// 🟢 Get all orders
+// Get all orders
 exports.getAllOrders = async (req, res) => {
   try {
     const [rows] = await pool.query(`
@@ -24,7 +27,7 @@ exports.getAllOrders = async (req, res) => {
   }
 };
 
-// 🟢 Get order by ID
+// Get order by ID
 exports.getOrderById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -51,12 +54,15 @@ exports.getOrderById = async (req, res) => {
   }
 };
 
-// 🟢 Add a new order
+// Add a new order
 exports.addOrder = async (req, res) => {
   try {
+    const customerId = req.session?.user?.customer_id;
+    if (!customerId) {
+      return res.status(401).json({ success: false, message: "Not logged in" });
+    }
+
     const {
-      order_number,
-      customer_id,
       order_status,
       shipping_address,
       billing_address,
@@ -67,13 +73,15 @@ exports.addOrder = async (req, res) => {
       created_by,
     } = req.body;
 
+    const order_number = generateOrderNumber();
+
     const [result] = await pool.query(
       `INSERT INTO orders 
       (order_number, customer_id, order_status, shipping_address, billing_address, subtotal, tax, shipping_fee, total, created_by)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         order_number,
-        customer_id,
+        customerId,
         order_status || 'pending',
         shipping_address,
         billing_address || null,
@@ -89,6 +97,7 @@ exports.addOrder = async (req, res) => {
       success: true,
       message: 'Order created successfully',
       order_id: result.insertId,
+      order_number,
     });
   } catch (err) {
     console.error('Error adding order:', err.message || err);
@@ -96,7 +105,7 @@ exports.addOrder = async (req, res) => {
   }
 };
 
-// 🟢 Update order
+// Update order
 exports.updateOrder = async (req, res) => {
   const { id } = req.params;
   const fields = [];
@@ -130,7 +139,7 @@ exports.updateOrder = async (req, res) => {
   }
 };
 
-// 🟢 Delete order
+// Delete order
 exports.deleteOrder = async (req, res) => {
   const { id } = req.params;
   try {
@@ -215,38 +224,47 @@ exports.exportOrdersPDF = async (req, res) => {
     // Table layout
     const tableTop = 100;
     const rowHeight = 25;
-
     const headers = ["ID", "Order #", "Customer", "Status", "Date", "Total"];
-    const colWidths = [30, 70, 140, 80, 140, 60];
+    const colWidths = [30, 90, 150, 90, 140, 70];
+    const totalTableWidth = colWidths.reduce((a, b) => a + b);
 
     let x = 30;
     let y = tableTop;
 
-    // Header background
-    doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill("#f0f0f0");
+    // Header row
+    doc.rect(x, y, totalTableWidth, rowHeight).fill("#f0f0f0");
     doc.fillColor("black").font("Helvetica-Bold").fontSize(11);
-
     let currentX = x;
     headers.forEach((h, i) => {
       doc.text(h, currentX + 5, y + 7, { width: colWidths[i] - 10 });
       currentX += colWidths[i];
     });
-
-    doc.strokeColor("black").rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
+    doc.strokeColor("black").rect(x, y, totalTableWidth, rowHeight).stroke();
     y += rowHeight;
 
-    // Rows
+    // Data rows
     doc.font("Helvetica").fontSize(10);
-
     results.forEach((o, index) => {
       if (y > 750) {
         doc.addPage();
         y = tableTop;
+
+        // redraw header on new page
+        doc.rect(x, y, totalTableWidth, rowHeight).fill("#f0f0f0");
+        doc.fillColor("black").font("Helvetica-Bold").fontSize(11);
+        currentX = x;
+        headers.forEach((h, i) => {
+          doc.text(h, currentX + 5, y + 7, { width: colWidths[i] - 10 });
+          currentX += colWidths[i];
+        });
+        doc.strokeColor("black").rect(x, y, totalTableWidth, rowHeight).stroke();
+        y += rowHeight;
+        doc.font("Helvetica").fontSize(10);
       }
 
-      // Alternating colors
+      // Alternating row background
       const bgColor = index % 2 === 0 ? "#fafafa" : "white";
-      doc.rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).fill(bgColor);
+      doc.rect(x, y, totalTableWidth, rowHeight).fill(bgColor);
       doc.fillColor("black");
 
       const row = [
@@ -255,7 +273,7 @@ exports.exportOrdersPDF = async (req, res) => {
         o.Customer,
         o.Status,
         new Date(o.OrderDate).toLocaleString(),
-        `$${o.Total}`
+        `$${Number(o.Total).toFixed(2)}`
       ];
 
       currentX = x;
@@ -264,7 +282,7 @@ exports.exportOrdersPDF = async (req, res) => {
         currentX += colWidths[i];
       });
 
-      doc.strokeColor("black").rect(x, y, colWidths.reduce((a, b) => a + b), rowHeight).stroke();
+      doc.strokeColor("black").rect(x, y, totalTableWidth, rowHeight).stroke();
       y += rowHeight;
     });
 

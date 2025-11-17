@@ -9,7 +9,8 @@ const pool = require('./db/connection'); // your DB pool
 
 app.use(cors());
 
-const productsRouter = require('./routes/products'); // products route
+const productsRouter = require('./routes/products'); // admin products route
+const customerProducts = require('./routes/customerProducts');
 const adminRoutes = require('./routes/admin');
 const authRoutes = require('./routes/auth');
 const customerRoutes = require('./routes/customers');
@@ -26,6 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API routes
+app.use('/products', customerProducts);
 app.use('/api/products', productsRouter);
 app.use('/auth', authRoutes);
 app.use('/customers', customerRoutes);

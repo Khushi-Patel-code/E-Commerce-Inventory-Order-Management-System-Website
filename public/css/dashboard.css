@@ -1,0 +1,119 @@
+body {
+    font-family: 'Monsterrat', sans-serif;
+    background: linear-gradient(to top, #C471ED, #301934);
+    background-repeat: no-repeat, repeat;
+    background-size: 100%, 200%;
+    color: #FAF9F9;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #C471ED, #301934);
+    background-size: 100% 100%;
+    opacity: 1;
+    z-index: -2;
+    /*animation: pulseGradient 6s ease-in-out infinite;*/
+    transition: opacity 0.5s ease-in-out;
+}
+
+body::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url('sketchFloat2.gif') repeat center;
+    background-size: 1700px;
+    opacity: 0.5;
+    animation: fadeSketches 6s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes pulseGradient {
+    0% {
+        background-size: 100% 100%;
+        opacity: 1;
+    }
+    40% {
+        background-size: 100% 140%;
+        opacity: 0.05;
+    }
+    60% {
+        background-size: 100% 140%;
+        opacity: 0.05;
+    }
+    100% {
+        background-size: 100% 100%;
+        opacity: 1;
+    }
+}
+
+@keyframes fadeSketches {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.5; }
+}
+
+.container-small {
+    max-width: 1200px;
+    margin: 24px auto;
+    background: #4F225E;
+    padding: 24px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 1s ease-out;
+}
+
+.card {
+    background: #3B1A4A;
+    color: #FAF9F9;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.text-muted,
+small {
+    color: #E0E0E0 !important;
+}
+
+
+.topbar {
+    background: #3B1A4A;
+    color: #FAF9F9;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.2);
+}
+
+.btn-outline-primary,
+.btn-outline-secondary {
+    border-color: #AA3868;
+    color: #FAF9F9;
+}
+
+.category-btn,
+.btn-outline-primary,
+.btn-outline-secondary {
+    background-color: #AA3868;
+    border-color: #AA3868;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-secondary:hover {
+    background-color: #EF476F;
+    border-color: #EF476F;
+    color: #fff;
+}
+
+.selection-title {
+    color: #FAF9F9;
+    font-weight: 600;
+}
+
+.muted-small {
+    color: #C0C0C0 !important;
+}

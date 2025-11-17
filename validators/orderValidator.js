@@ -16,8 +16,6 @@ const allowedStatuses = [
 // ----------------------
 exports.validateCreateOrder = (req, res, next) => {
   const {
-    order_number,
-    customer_id,
     order_status,
     shipping_address,
     billing_address,
@@ -29,19 +27,10 @@ exports.validateCreateOrder = (req, res, next) => {
   } = req.body;
 
   // Required fields
-  if (!order_number)
-    return res.status(400).json({ success: false, message: "order_number is required" });
-
-  if (!customer_id)
-    return res.status(400).json({ success: false, message: "customer_id is required" });
-
   if (!shipping_address)
     return res.status(400).json({ success: false, message: "shipping_address is required" });
 
   // Data types
-  if (isNaN(customer_id))
-    return res.status(400).json({ success: false, message: "customer_id must be a number" });
-
   if (subtotal !== undefined && isNaN(subtotal))
     return res.status(400).json({ success: false, message: "subtotal must be a number" });
 

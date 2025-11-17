@@ -6,7 +6,16 @@ const PDFDocument = require('pdfkit');
 // Get all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM products LIMIT 200');
+    const [rows] = await pool.query(`
+      SELECT p.product_id, p.product_name, p.description, p.price,
+             IFNULL(SUM(i.quantity), 0) AS stock
+      FROM products p
+      LEFT JOIN inventory i ON p.product_id = i.product_id
+      WHERE p.active = 1
+      GROUP BY p.product_id
+      LIMIT 200
+      `);
+
     res.json({ success: true, count: rows.length, data: rows });
   } catch (err) {
     console.error('Error fetching products:', err.message || err);
@@ -105,7 +114,7 @@ exports.deleteProduct = async (req, res) => {
 };
 
 
-// Get all products
+/*// Get all products
 exports.getAllProducts = async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM products LIMIT 200');
@@ -114,7 +123,7 @@ exports.getAllProducts = async (req, res) => {
     console.error('Error fetching products:', err.message || err);
     res.status(500).json({ success: false, message: 'Failed to fetch products' });
   }
-};
+};*/
 
 // Get single product by ID
 exports.getProductById = async (req, res) => {

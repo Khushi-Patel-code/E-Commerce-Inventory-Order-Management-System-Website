@@ -1,4 +1,4 @@
-// public/js/main.js
+// public/js/products.js
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('loadProducts');
   const status = document.getElementById('status');
