@@ -33,6 +33,25 @@
             margin-left: 230px;
             padding: 20px;
         }
+        .stats .card.shadow-sm {
+            cursor: pointer;
+        }
+        .card-hover-effect {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-5px); 
+        }
+        .chart-container {
+            height: 475px;
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
     </style>
 
 </head>
@@ -67,31 +86,31 @@
 </div>
 
     <!-- STAT CARDS -->
-    <div class="row g-3">
+    <div class="row g-3 stats">
         <div class="col-md-3">
-            <div class="card shadow-sm p-3">
+            <div class="card shadow-sm p-3 card-hover-effect" onclick="window.location.href='admin-charts.html'">
                 <h5>Total Revenue<i class="fa-solid fa-sack-dollar"></i></h5>
                 <h3 id="count-revenue">0</h3>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow-sm p-3">
-                <h5><a href="admin-products.html" class="text-dark">Products<i class="fa-solid fa-box-open"></i></a></h5>
+            <div class="card shadow-sm p-3 card-hover-effect" onclick="window.location.href='admin-products.html'">
+                <h5>Products<i class="fa-solid fa-box-open"></i></h5>
                 <h3 id="count-products">0</h3>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow-sm p-3">
-                <h5><a href="admin-users.html" class="text-dark">Customers<i class="fa-solid fa-users"></i></a></h5>
+            <div class="card shadow-sm p-3 card-hover-effect" onclick="window.location.href='admin-users.html'">
+                <h5>Customers<i class="fa-solid fa-users"></i></h5>
                 <h3 id="count-customers">0</h3>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow-sm p-3">
-                <h5><a href="admin-orders.html" class="text-dark">Orders<i class="fa-solid fa-cart-shopping"></i></a></h5>
+            <div class="card shadow-sm p-3 card-hover-effect" onclick="window.location.href='admin-orders.html'">
+                <h5>Orders<i class="fa-solid fa-cart-shopping"></i></h5>
                 <h3 id="count-orders">0</h3>
             </div>
         </div>
@@ -102,41 +121,35 @@
 
 <!-- Row 1: Chart 1 & Chart 2 -->
 <div class="row mt-4 g-3">
-    <div class="col-md-8 chart-container card shadow-sm p-3">
-        <h4>Revenue vs Date</h4>
-        <canvas id="revenueChart"></canvas>
+    
+    <div class="col-md-8">
+        <div class="card shadow-sm p-3 chart-container">
+            <h4>Revenue vs Date</h4>
+            <canvas id="revenueChart"></canvas>
+        </div>
     </div>
-    <div class="col-md-4 chart-container">
-        <h4>Revenue by Category</h4>
-        <canvas id="categoryDonut"></canvas>
-    </div>
-</div>
 
-<!-- Row 2: Chart 3 under Chart 1 -->
-<div class="row mt-5">
-    <div class="col-md-8 chart-container">
-        <h4>Top Selling Products</h4>
-        <canvas id="topProducts"></canvas>
-    </div>
-    <div class="col-md-6">
-        <!-- empty to leave space under Chart 2 -->
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3 chart-container">
+            <h4>Revenue by Category</h4>
+            <canvas id="categoryDonut"></canvas>
+        </div>
     </div>
 </div>
 
-<style>
-.chart-container {
-    height: 400px;
-}
+<div class="row mt-4 g-3"> 
+    
+    <div class="col-md-8">
+        <div class="card shadow-sm p-3 chart-container">
+            <h4>Top Selling Products</h4>
+            <canvas id="topProducts"></canvas>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        </div>
+</div>
 
-.chart-container canvas {
-    width: 100% !important;
-    height: 100% !important;
-}
-
-</style>
-
-
-<!-- JS Files -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="../js/admin-dashboard.js"></script>
 

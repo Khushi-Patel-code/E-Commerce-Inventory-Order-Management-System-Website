@@ -139,9 +139,9 @@ exports.exportViewPDF = async (req, res) => {
         // Calculate dynamic column width based on A4 landscape width (792 - 60 margin)
         const totalWidth = 732;
         const colWidth = totalWidth / columnCount;
-        const rowHeight = 25;
+        const rowHeight = 30;
 
-        doc.fontSize(8); // Smaller font for many columns
+        doc.fontSize(10); // Smaller font for many columns
         let y = tableTop;
 
         // Header Row
