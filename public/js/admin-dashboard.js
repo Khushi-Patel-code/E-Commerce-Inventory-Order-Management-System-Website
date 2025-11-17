@@ -25,7 +25,7 @@ function loadRevenue() {
     fetch("http://localhost:3000/admin/dashboard/revenue")
         .then(res => res.json())
         .then(data => {
-            document.getElementById("count-revenue").textContent = `$${data.revenue}`;
+            animateCount("count-revenue", data.revenue, 1000, '$'); // 2000ms duration for revenue
         })
         .catch(() => {
             document.getElementById("count-revenue").textContent = "ERR";
@@ -36,7 +36,7 @@ function loadProducts() {
     fetch("http://localhost:3000/admin/dashboard/products")
         .then(res => res.json())
         .then(data => {
-            document.getElementById("count-products").textContent = data.totalProducts;
+            animateCount("count-products", data.totalProducts);
         })
         .catch(() => {
             document.getElementById("count-products").textContent = "ERR";
@@ -47,7 +47,7 @@ function loadCustomers() {
     fetch("http://localhost:3000/admin/dashboard/customers")
         .then(res => res.json())
         .then(data => {
-            document.getElementById("count-customers").textContent = data.totalCustomers;
+            animateCount("count-customers", data.totalCustomers);
         })
         .catch(() => {
             document.getElementById("count-customers").textContent = "ERR";
@@ -58,7 +58,7 @@ function loadOrders() {
     fetch("http://localhost:3000/admin/dashboard/orders")
         .then(res => res.json())
         .then(data => {
-            document.getElementById("count-orders").textContent = data.totalOrders;
+            animateCount("count-orders", data.totalOrders);
         })
         .catch(() => {
             document.getElementById("count-orders").textContent = "ERR";
@@ -104,7 +104,15 @@ function loadDashboardCharts() {
                             backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796']
                         }]
                     },
-                    options: { responsive: true }
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom', // Places the legend underneath the chart
+                                align: 'center'     // Optional: Centers the legend horizontally
+                            }
+                        }
+                    }
                 });
             }
 
@@ -118,7 +126,7 @@ function loadDashboardCharts() {
                         datasets: [{
                             label: 'Units Sold',
                             data: topProducts.map(p => parseInt(p.units_sold)),
-                            backgroundColor: '#1cc88a'
+                            backgroundColor: '#3d08baff'
                         }]
                     },
                     options: { indexAxis: 'y', responsive: true, scales: { x: { beginAtZero: true } } }
@@ -127,4 +135,41 @@ function loadDashboardCharts() {
 
         })
         .catch(err => console.error('Error loading dashboard charts:', err));
+}
+
+// Function to animate the counting effect on stat numbers
+function animateCount(id, finalValue, duration = 1000, prefix = '') {
+    const obj = document.getElementById(id);
+    if (!obj) return; 
+
+    let startValue = 0;
+    let numericValue = parseFloat(String(finalValue).replace(/[$,]/g, ''));
+    
+    // Determine the step size and whether to use decimals
+    const step = numericValue / (duration / 16);
+    const isRevenue = id === 'count-revenue';
+    
+    let current = 0;
+    
+    const counter = setInterval(() => {
+        current += step;
+        
+        if (current >= numericValue) {
+            clearInterval(counter);
+            current = numericValue; // Ensure it stops exactly on the final value
+        }
+
+        let displayValue;
+        if (isRevenue) {
+             displayValue = current.toFixed(2);
+        } else {
+             displayValue = Math.floor(current);
+        }
+
+        obj.textContent = prefix + displayValue;
+
+        if (current === numericValue) {
+            clearInterval(counter);
+        }
+    }, 16); // Runs approximately 60 times per second
 }

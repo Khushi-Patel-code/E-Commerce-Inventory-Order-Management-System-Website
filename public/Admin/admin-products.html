@@ -4,49 +4,34 @@
     <meta charset="UTF-8">
     <title>Admin Products</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-         body {
-            background-color: #f8f9fc;
-        }
+        body { background-color: #f8f9fc; }
         .sidebar {
-            height: 100vh;
-            width: 230px;
-            background: #343a40;
+            height: 100vh; 
+            width: 210px;
+            background: #343a40; 
             padding-top: 20px;
         }
         .sidebar a {
-            color: white;
-            padding: 12px;
-            display: block;
-            text-decoration: none;
+            color: white; padding: 12px;
+            display: block; text-decoration: none;
         }
-        .sidebar a:hover {
-            background: #495057;
-        }
-        .content-area {
-            margin-left: 230px;
-            padding: 20px;
-        }
-        table th, table td {
-            vertical-align: middle !important;
-        }
+        .sidebar a:hover { background: #495057; }
+        .content-area { margin-left: 230px; padding: 20px; }
+        table th, table td { vertical-align: middle !important; }
     </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar position-fixed">
     <h4 class="text-center text-white">Admin Panel</h4>
-
     <a href="admin-dashboard.html"><i class="fa fa-home me-2"></i> Dashboard</a>
-    <a href="admin-products.html"><i class="fa fa-box me-2"></i> Products</a>
+    <a href="admin-products.html" style="background:#495057;"><i class="fa fa-box me-2"></i> Products</a> 
     <a href="admin-orders.html"><i class="fa fa-shopping-cart me-2"></i> Orders</a>
     <a href="admin-users.html"><i class="fa fa-users me-2"></i> Users</a>
     <a href="admin-views.html"><i class="fa fa-table me-2"></i> SQL Views</a>
@@ -55,38 +40,135 @@
     <a href="../staff-login.html"><i class="fa-solid fa-person-running me-2"></i> Logout</a>
 </div>
 
-<!-- CONTENT AREA -->
 <div class="content-area">
 
-    <!-- TOP BAR -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fa fa-box"></i> Products</h2>
 
         <button class="btn btn-light" onclick="window.location.href='admin-profile.html'">
-            <i class="fa fa-user-circle fa-2x"></i>
+            <i class="fa fa-user-circle fa-3x"></i>
         </button>
     </div>
 
-    <!-- PAGE CONTENT -->
     <div class="card shadow-sm p-4">
 
-        <button id="loadProducts" class="btn btn-primary mb-3">
-            <i class="fa fa-sync"></i> Load Products
-        </button>
+        <div class="d-flex mb-3">
+            <input id="searchProductId" class="form-control me-2" placeholder="Search Product ID">
+            <button class="btn btn-dark" onclick="searchProductById()"><i class="fa fa-search"></i></button>
+        </div>
 
-        <div id="status" class="mb-2 text-muted"></div>
+        <div class="mb-3">
+            <button class="btn btn-primary me-2" onclick="loadProducts()">Load Recent Products</button>
+
+            <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                <i class="fa fa-plus"></i> Add Product
+            </button>
+
+            <!-- External API -->
+            <button class="btn btn-info me-2" onclick="loadExternalProducts()">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Load External Products
+            </button>
+
+            <button class="btn btn-warning me-2" onclick="exportCSV()"><i class="fa-solid fa-file-pdf me-1"></i> Export CSV</button>
+            <button class="btn btn-danger" onclick="exportPDF()"><i class="fa-solid fa-file-pdf me-1"></i> Export PDF</button>
+        </div>
+
+        <div id="status" class="text-muted mb-2"></div>
 
         <div class="table-responsive">
-            <table id="productsTable" class="table table-striped table-bordered" style="display:none;">
+            <table class="table table-striped table-bordered">
                 <thead id="productsHead"></thead>
                 <tbody id="productsBody"></tbody>
             </table>
         </div>
-
     </div>
 </div>
 
-<script src="../js/products.js"></script>
+<div class="modal fade" id="addProductModal">
+    <div class="modal-dialog">
+        <form class="modal-content" onsubmit="submitAddProduct(event)">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <label>SKU</label>
+                <input class="form-control mb-2" name="sku" required>
+
+                <label>Product Name</label>
+                <input class="form-control mb-2" name="product_name" required>
+
+                <label>Description</label>
+                <textarea class="form-control mb-2" name="description"></textarea>
+
+                <label>Category ID (Optional)</label>
+                <input type="number" class="form-control mb-2" name="category_id">
+
+                <label>Price</label>
+                <input type="number" step="0.01" class="form-control mb-2" name="price" required>
+
+                <label>Retail Price (Optional)</label>
+                <input type="number" step="0.01" class="form-control mb-2" name="retail_price">
+
+                <label>Active</label>
+                <select class="form-control mb-2" name="active" required>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary">Add Product</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="updateProductModal">
+    <div class="modal-dialog">
+        <form class="modal-content" onsubmit="submitUpdateProduct(event)">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="update_product_id">
+                
+                <label>SKU</label>
+                <input class="form-control mb-2" id="update_sku" required>
+
+                <label>Product Name</label>
+                <input class="form-control mb-2" id="update_product_name" required>
+
+                <label>Description</label>
+                <textarea class="form-control mb-2" id="update_description"></textarea>
+
+                <label>Category ID (Optional)</label>
+                <input type="number" class="form-control mb-2" id="update_category_id">
+
+                <label>Price</label>
+                <input type="number" step="0.01" class="form-control mb-2" id="update_price" required>
+
+                <label>Retail Price (Optional)</label>
+                <input type="number" step="0.01" class="form-control mb-2" id="update_retail_price">
+
+                <label>Active</label>
+                <select class="form-control mb-2" id="update_active" required>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-warning">Update Product</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="../js/main.js"></script>
 
 </body>
 </html>

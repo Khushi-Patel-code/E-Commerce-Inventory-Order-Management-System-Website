@@ -11,31 +11,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-        body {
-            background-color: #f8f9fc;
-        }
+        body { background-color: #f8f9fc; }
         .sidebar {
-            height: 100vh;
-            width: 230px;
-            background: #343a40;
+            height: 100vh; 
+            width: 210px;
+            background: #343a40; 
             padding-top: 20px;
         }
         .sidebar a {
-            color: white;
-            padding: 12px;
-            display: block;
-            text-decoration: none;
+            color: white; padding: 12px;
+            display: block; text-decoration: none;
         }
-        .sidebar a:hover {
-            background: #495057;
-        }
-        .content-area {
-            margin-left: 230px;
-            padding: 20px;
-        }
-        table th, table td {
-            vertical-align: middle !important;
-        }
+        .sidebar a:hover { background: #495057; }
+        .content-area { margin-left: 230px; padding: 20px; }
+        table th, table td { vertical-align: middle !important; }
     </style>
 </head>
 
@@ -44,7 +33,6 @@
 <!-- SIDEBAR -->
 <div class="sidebar position-fixed">
     <h4 class="text-center text-white">Admin Panel</h4>
-
     <a href="admin-dashboard.html"><i class="fa fa-home me-2"></i> Dashboard</a>
     <a href="admin-products.html"><i class="fa fa-box me-2"></i> Products</a>
     <a href="admin-orders.html" style="background:#495057;"><i class="fa fa-shopping-cart me-2"></i> Orders</a>
@@ -63,7 +51,7 @@
         <h2><i class="fa fa-shopping-cart"></i> Orders</h2>
 
         <button class="btn btn-light" onclick="window.location.href='admin-profile.html'">
-            <i class="fa fa-user-circle fa-2x"></i>
+            <i class="fa fa-user-circle fa-3x"></i>
         </button>
     </div>
 
@@ -79,8 +67,14 @@
         <!-- Buttons -->
         <div class="mb-3">
             <button class="btn btn-primary me-2" onclick="loadOrders()">Load Recent Orders</button>
-            <button class="btn btn-success me-2" onclick="exportCSV()">Export CSV</button>
-            <button class="btn btn-danger" onclick="exportPDF()">Export PDF</button>
+
+            
+            <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#addOrderModal">
+                <i class="fa fa-plus"></i> Add Order
+            </button>
+
+            <button class="btn btn-warning me-2" onclick="exportCSV()"><i class="fa-solid fa-file-csv me-1"></i> Export CSV</button>
+            <button class="btn btn-danger" onclick="exportPDF()"><i class="fa-solid fa-file-pdf me-1"></i> Export PDF</button>
         </div>
 
         <div id="status" class="text-muted mb-2"></div>
@@ -95,11 +89,94 @@
     </div>
 </div>
 
-<script>
-//    CONFIG
+<!--ADD ORDER MODAL -->
+<div class="modal fade" id="addOrderModal">
+    <div class="modal-dialog">
+        <form class="modal-content" onsubmit="submitAddOrder(event)">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
 
+            <div class="modal-body">
+
+                <label>Order Number</label>
+                <input class="form-control mb-2" name="order_number" required>
+
+                <label>Customer ID</label>
+                <input class="form-control mb-2" name="customer_id" required>
+
+                <label>Status</label>
+                <select class="form-control mb-2" name="order_status">
+
+                    <option value="">Select order Status</option>
+                    <option>pending</option>
+                    <option>processed</option>
+                    <option>shipped</option>
+                    <option>delivered</option>
+                    <option value="">cancelled</option>
+                </select>
+
+                <label>Shipping Address</label>
+                <input class="form-control mb-2" name="shipping_address">
+
+                <label>Subtotal</label>
+                <input type="number" class="form-control mb-2" name="subtotal" step="0.01">
+
+                <label>Total</label>
+                <input type="number" class="form-control mb-2" name="total" step="0.01">
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary">Add Order</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- UPDATE ORDER MODal -->
+<div class="modal fade" id="updateOrderModal">
+    <div class="modal-dialog">
+        <form class="modal-content" onsubmit="submitUpdateOrder(event)">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="update_order_id">
+
+                <label>Status</label>
+                <select class="form-control mb-2" id="update_status">
+                    <option value="pending">pending</option>
+                    <option value="processed">processed</option>
+                    <option value="shipped">shipped</option>
+                    <option value="delivered">delivered</option>
+                    <option value="cancelled">cancelled</option>
+                </select>
+
+
+                <label>Shipping Address</label>
+                <input class="form-control mb-2" id="update_shipping_address">
+
+                <label>Total</label>
+                <input type="number" class="form-control mb-2" id="update_total" step="0.01">
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-warning">Update Order</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
 const API_BASE = "http://localhost:3000/api/orders";
 
+/* EXISTING FUNCTIONS (UNCHANGED) */
 /* ---------------------------
     1. LOAD RECENT ORDERS
 -----------------------------*/
@@ -111,7 +188,7 @@ async function loadOrders() {
 
     if (!json.success) return;
 
-    const rows = json.data.slice(0, 10); // show only last 10
+    const rows = json.data // shows all data
 
     let head = `
         <tr class="table-dark">
@@ -139,6 +216,9 @@ async function loadOrders() {
                     <button class="btn btn-sm btn-info me-1" onclick="viewOrder(${o.order_id})">
                         <i class="fa fa-eye"></i>
                     </button>
+                    <button class="btn btn-sm btn-warning me-1" onclick='openUpdateModal(${JSON.stringify(o)})'>
+                        <i class="fa fa-edit"></i>
+                    </button>
                     <button class="btn btn-sm btn-danger" onclick="deleteOrder(${o.order_id})">
                         <i class="fa fa-trash"></i>
                     </button>
@@ -149,7 +229,7 @@ async function loadOrders() {
 
     document.getElementById("ordersHead").innerHTML = head;
     document.getElementById("ordersBody").innerHTML = body;
-    document.getElementById("status").innerText = "Showing recent 10 orders.";
+    document.getElementById("status").innerText = `Showing ${rows.length} recent orders.`;
 }
 
 /* ---------------------------
@@ -187,7 +267,6 @@ async function searchOrderById() {
         </tr>
     `;
 }
-
 /* ---------------------------
     3. DELETE ORDER
 -----------------------------*/
@@ -200,27 +279,145 @@ async function deleteOrder(id) {
     alert(json.message);
     loadOrders();
 }
+function exportCSV() { window.location.href = `${API_BASE}/export/csv`; }
+function exportPDF() { window.location.href = `${API_BASE}/export/pdf`; }
 
-/* ---------------------------
-    4. VIEW ORDER (TEMP)
------------------------------*/
-function viewOrder(id) {
+/*ADD NEW ORDER */
+async function submitAddOrder(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    const res = await fetch(API_BASE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+
+    const json = await res.json();
+    alert(json.message);
+
+    form.reset();
+    loadOrders();
 }
 
-/* ---------------------------
-    5. EXPORT CSV
------------------------------*/
-function exportCSV() {
-    window.location.href = `${API_BASE}/export/csv`;
+/*OPEN UPDATE MODAl */
+function openUpdateModal(order) {
+    document.getElementById("update_order_id").value = order.order_id;
+    document.getElementById("update_status").value = order.order_status;
+    document.getElementById("update_shipping_address").value = order.shipping_address;
+    document.getElementById("update_total").value = order.total;
+
+    new bootstrap.Modal(document.getElementById("updateOrderModal")).show();
 }
 
-/* ---------------------------
-    6. EXPORT PDF
------------------------------*/
-function exportPDF() {
-    window.location.href = `${API_BASE}/export/pdf`;
+/*SUBMIT UPDATE*/
+async function submitUpdateOrder(event) {
+    event.preventDefault();
+
+    const id = document.getElementById("update_order_id").value;
+
+    const data = {
+        order_status: document.getElementById("update_status").value,
+        shipping_address: document.getElementById("update_shipping_address").value,
+        total: document.getElementById("update_total").value,
+    };
+
+    
+    const res = await fetch(`${API_BASE}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+
+   const json = await res.json();
+
+    // Show the same success modal
+    document.getElementById("successMessage").innerText = json.message;
+    new bootstrap.Modal(document.getElementById("successModal")).show();
+
+    // Close the update modal
+    const updateModalEl = document.getElementById("updateOrderModal");
+    const updateModal = bootstrap.Modal.getInstance(updateModalEl);
+    if (updateModal) updateModal.hide();
+
+    loadOrders();
 }
+function deleteOrder(id) {
+    document.getElementById("delete_order_id").value = id;
+    new bootstrap.Modal(document.getElementById("deleteConfirmModal")).show();
+}
+async function confirmDelete() {
+    const id = document.getElementById("delete_order_id").value;
+
+    const res = await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
+    const json = await res.json();
+
+    document.getElementById("successMessage").innerText = json.message;
+    new bootstrap.Modal(document.getElementById("successModal")).show();
+
+    loadOrders();
+}
+async function submitAddOrder(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    const res = await fetch(API_BASE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+
+    const json = await res.json();
+
+    document.getElementById("successMessage").innerText = json.message;
+    new bootstrap.Modal(document.getElementById("successModal")).show();
+
+    form.reset();
+    loadOrders();
+}
+
+window.onload = loadOrders;
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<div class="modal fade" id="successModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">Success</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="successMessage">
+        Action completed successfully!
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal fade" id="deleteConfirmModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Confirm Delete</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this order?
+        <input type="hidden" id="delete_order_id">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

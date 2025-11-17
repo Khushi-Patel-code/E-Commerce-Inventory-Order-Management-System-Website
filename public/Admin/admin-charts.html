@@ -4,30 +4,36 @@
     <meta charset="UTF-8">
     <title>Charts Overview</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
+        /* Basic cleanup, making sure the background isn't blinding white */
         body { background-color: #f8f9fc; }
         .sidebar {
-            height: 100vh;
-            background: #343a40;
+            height: 100vh; 
+            width: 210px;
+            background: #343a40; 
             padding-top: 20px;
         }
         .sidebar a {
-            color: white;
-            padding: 12px;
-            display: block;
+            color: white; padding: 12px;
+            display: block; text-decoration: none;
         }
-        .sidebar a:hover {
-            background: #495057;
+        .sidebar a:hover { background: #495057; }
+        /* Pushing the content over to the right of the sidebar */
+        .content-area { margin-left: 230px; padding: 20px; }
+        table th, table td { vertical-align: middle !important; }
+        
+        .chart-height-container {
+            height: 475px;
         }
-        .content-area {
-            margin-left: 230px;
-            padding: 30px;
+        
+        /* Crucial: Makes the actual Chart.js canvas fill the entire height of its parent div */
+        .chart-height-container canvas {
+            width: 100% !important;
+            height: 100% !important;
         }
     </style>
 </head>
@@ -37,54 +43,55 @@
 <div class="sidebar position-fixed">
     <h4 class="text-center text-white">Admin Panel</h4>
 
-    <a href="admin-dashboard.html"><i class="fa fa-home"></i> Dashboard</a>
-    <a href="admin-products.html"><i class="fa fa-box"></i> Products</a>
-    <a href="admin-orders.html"><i class="fa fa-shopping-cart"></i> Orders</a>
-    <a href="admin-users.html"><i class="fa fa-users"></i> Users</a>
-    <a href="admin-views.html"><i class="fa fa-table"></i> SQL Views</a>
-    <a href="admin-reports.html"><i class="fa fa-chart-line"></i> Reports</a>
-    <a href="admin-charts.html"><i class="fa fa-chart-pie"></i> Charts</a>
+    <a href="admin-dashboard.html"><i class="fa fa-home me-2"></i> Dashboard</a>
+    <a href="admin-products.html"><i class="fa fa-box me-2"></i> Products</a>
+    <a href="admin-orders.html"><i class="fa fa-shopping-cart me-2"></i> Orders</a>
+    <a href="admin-users.html"><i class="fa fa-users me-2"></i> Users</a>
+    <a href="admin-views.html"><i class="fa fa-table me-2"></i> SQL Views</a>
+    <a href="admin-reports.html"><i class="fa fa-chart-line me-2"></i> Reports</a>
+    <a href="admin-charts.html" style="background:#495057;"><i class="fa fa-chart-pie me-2"></i> Charts</a>
+    <a href="../staff-login.html"><i class="fa-solid fa-person-running me-2"></i> Logout</a>
 </div>
 
 <div class="content-area">
-    <h2>Charts Overview</h2>
-    <p class="text-muted">Sales, revenue and category performance charts.</p>
 
-    <div class="row mt-4">
-        <div class="col-md-8 chart-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa fa-chart-pie me-2"></i>Charts Overview</h2>
+
+        <button class="btn btn-light" onclick="window.location.href='admin-profile.html'">
+            <i class="fa fa-user-circle fa-3x"></i>
+        </button>
+    </div>
+
+<div class="row mt-4 g-3">
+    
+    <div class="col-md-8">
+        <div class="card shadow-sm p-3 chart-height-container">
             <h4>Revenue vs Date</h4>
             <canvas id="revenueChart"></canvas>
         </div>
     </div>
-    <div class="row mt-5">
-        <div class="col-md-4 chart-container">
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3 chart-height-container">
             <h4>Revenue by Category</h4>
             <canvas id="categoryDonut"></canvas>
         </div>
     </div>
+</div>
 
-
-    <div class="row mt-5">
-        <div class="col-md-8 chart-container">
+<div class="row mt-4 g-3">
+    
+    <div class="col-md-8">
+        <div class="card shadow-sm p-3 chart-height-container">
             <h4>Top Selling Products</h4>
             <canvas id="topProducts"></canvas>
         </div>
     </div>
+    
+    <div class="col-md-4">
+        </div>
 </div>
-
-
-<style>
-.chart-container {
-    height: 400px;
-    margin-left: 230px;
-}
-
-.chart-container canvas {
-    width: 100% !important;
-    height: 100% !important;
-}
-
-</style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="../js/admin-charts.js"></script>

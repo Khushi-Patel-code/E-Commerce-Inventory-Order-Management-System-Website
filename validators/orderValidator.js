@@ -3,12 +3,10 @@
 // Allowed order statuses
 const allowedStatuses = [
   "pending",
-  "processing",
+  "processed",
   "shipped",
   "delivered",
   "cancelled",
-  "returned",
-  "refunded"
 ];
 
 // ----------------------

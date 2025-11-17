@@ -14,7 +14,7 @@ fetch('/api/charts/data')
           datasets: [{
             label: 'Revenue ($)',
             data: revenueVsDate.map(d => parseFloat(d.revenue)),
-            borderColor: '#4e73df',
+            borderColor: '#244fceff',
             backgroundColor: 'rgba(78,115,223,0.2)',
             fill: true,
             tension: 0.4
@@ -26,19 +26,27 @@ fetch('/api/charts/data')
 
     // Revenue by Category
     const categoryCanvas = document.getElementById("categoryDonut");
-    if (categoryCanvas) {
-      new Chart(categoryCanvas, {
-        type: 'doughnut',
-        data: {
-          labels: revenueByCategory.map(c => c.category_name),
-          datasets: [{
-            data: revenueByCategory.map(c => parseFloat(c.revenue)),
-            backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796']
-          }]
-        },
-        options: { responsive: true }
-      });
-    }
+      if (categoryCanvas) {
+          new Chart(categoryCanvas, {
+              type: 'doughnut',
+              data: {
+                  labels: revenueByCategory.map(c => c.category_name),
+                  datasets: [{
+                      data: revenueByCategory.map(c => parseFloat(c.revenue)),
+                      backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796']
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  plugins: {
+                      legend: {
+                          position: 'bottom', // Places the legend underneath the chart
+                          align: 'center'   
+                      }
+                  }
+              }
+          });
+      }
 
     // Top Selling Products
     const topProductsCanvas = document.getElementById("topProducts");
@@ -50,7 +58,7 @@ fetch('/api/charts/data')
           datasets: [{
             label: 'Units Sold',
             data: topProducts.map(p => parseInt(p.units_sold)),
-            backgroundColor: '#1cc88a'
+            backgroundColor: '#8604bdff'
           }]
         },
         options: { indexAxis: 'y', responsive: true, scales: { x: { beginAtZero: true } } }

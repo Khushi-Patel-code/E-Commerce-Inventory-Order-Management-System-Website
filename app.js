@@ -58,6 +58,8 @@ app.use('/api/payments', paymentRoutes);
 const chartsRouter = require('./routes/charts');
 app.use('/api/charts', chartsRouter);
 
+const viewsRouter = require('./routes/views');
+app.use('/api/views', viewsRouter);
 
 // health check (ping)
 app.get('/api/ping', async (req, res) => {

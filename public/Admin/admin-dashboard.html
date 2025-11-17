@@ -18,11 +18,13 @@
             height: 100vh;
             background: #343a40;
             padding-top: 20px;
+            width: 210px;
         }
         .sidebar a {
             color: white;
             padding: 12px;
             display: block;
+            text-decoration: none;
         }
         .sidebar a:hover {
             background: #495057;
@@ -31,9 +33,25 @@
             margin-left: 230px;
             padding: 20px;
         }
-        a{
-            text-decoration: none;
+        .stats .card.shadow-sm {
+            cursor: pointer;
         }
+        .card-hover-effect {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-5px); 
+        }
+        .chart-container {
+            height: 475px;
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
     </style>
 
 </head>
@@ -43,14 +61,14 @@
 <div class="sidebar position-fixed">
     <h4 class="text-center text-white">Admin Panel</h4>
 
-    <a href="admin-dashboard.html"><i class="fa fa-home"></i> Dashboard</a>
-    <a href="admin-products.html"><i class="fa fa-box"></i> Products</a>
-    <a href="admin-orders.html"><i class="fa fa-shopping-cart"></i> Orders</a>
-    <a href="admin-users.html"><i class="fa fa-users"></i> Users</a>
-    <a href="admin-views.html"><i class="fa fa-table"></i> SQL Views</a>
-    <a href="admin-reports.html"><i class="fa fa-chart-line"></i> Reports</a>
-    <a href="admin-charts.html"><i class="fa fa-chart-pie"></i> Charts</a>
-    <a href="../staff-login.html"><i class="fa-solid fa-person-running"></i>Logout</a>
+    <a href="admin-dashboard.html"><i class="fa fa-home me-2"></i> Dashboard</a>
+    <a href="admin-products.html"><i class="fa fa-box me-2"></i> Products</a>
+    <a href="admin-orders.html"><i class="fa fa-shopping-cart me-2"></i> Orders</a>
+    <a href="admin-users.html"><i class="fa fa-users me-2"></i> Users</a>
+    <a href="admin-views.html"><i class="fa fa-table me-2"></i> SQL Views</a>
+    <a href="admin-reports.html"><i class="fa fa-chart-line me-2"></i> Reports</a>
+    <a href="admin-charts.html"><i class="fa fa-chart-pie me-2"></i> Charts</a>
+    <a href="../staff-login.html"><i class="fa-solid fa-person-running me-2"></i> Logout</a>
 </div>
 
 <div class="content-area">
@@ -68,30 +86,30 @@
 </div>
 
     <!-- STAT CARDS -->
-    <div class="row g-3">
+    <div class="row g-3 stats">
         <div class="col-md-3">
-            <div class="card shadow-sm p-3">
+            <div class="card shadow-sm p-3 card-hover-effect" onclick="window.location.href='admin-charts.html'">
                 <h5>Total Revenue<i class="fa-solid fa-sack-dollar"></i></h5>
                 <h3 id="count-revenue">0</h3>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow-sm p-3">
+            <div class="card shadow-sm p-3 card-hover-effect" onclick="window.location.href='admin-products.html'">
                 <h5>Products<i class="fa-solid fa-box-open"></i></h5>
                 <h3 id="count-products">0</h3>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow-sm p-3">
+            <div class="card shadow-sm p-3 card-hover-effect" onclick="window.location.href='admin-users.html'">
                 <h5>Customers<i class="fa-solid fa-users"></i></h5>
                 <h3 id="count-customers">0</h3>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow-sm p-3">
+            <div class="card shadow-sm p-3 card-hover-effect" onclick="window.location.href='admin-orders.html'">
                 <h5>Orders<i class="fa-solid fa-cart-shopping"></i></h5>
                 <h3 id="count-orders">0</h3>
             </div>
@@ -100,46 +118,38 @@
 
 
     <!-- CHART AREA -->
-<h2>Charts Overview</h2>
-<p class="text-muted">Sales, revenue and category performance charts.</p>
 
 <!-- Row 1: Chart 1 & Chart 2 -->
-<div class="row mt-4">
-    <div class="col-md-8 chart-container">
-        <h4>Revenue vs Date</h4>
-        <canvas id="revenueChart"></canvas>
+<div class="row mt-4 g-3">
+    
+    <div class="col-md-8">
+        <div class="card shadow-sm p-3 chart-container">
+            <h4>Revenue vs Date</h4>
+            <canvas id="revenueChart"></canvas>
+        </div>
     </div>
-    <div class="col-md-4 chart-container">
-        <h4>Revenue by Category</h4>
-        <canvas id="categoryDonut"></canvas>
-    </div>
-</div>
 
-<!-- Row 2: Chart 3 under Chart 1 -->
-<div class="row mt-5">
-    <div class="col-md-8 chart-container">
-        <h4>Top Selling Products</h4>
-        <canvas id="topProducts"></canvas>
-    </div>
-    <div class="col-md-6">
-        <!-- empty to leave space under Chart 2 -->
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3 chart-container">
+            <h4>Revenue by Category</h4>
+            <canvas id="categoryDonut"></canvas>
+        </div>
     </div>
 </div>
 
-<style>
-.chart-container {
-    height: 400px;
-}
+<div class="row mt-4 g-3"> 
+    
+    <div class="col-md-8">
+        <div class="card shadow-sm p-3 chart-container">
+            <h4>Top Selling Products</h4>
+            <canvas id="topProducts"></canvas>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        </div>
+</div>
 
-.chart-container canvas {
-    width: 100% !important;
-    height: 100% !important;
-}
-
-</style>
-
-
-<!-- JS Files -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="../js/admin-dashboard.js"></script>
 

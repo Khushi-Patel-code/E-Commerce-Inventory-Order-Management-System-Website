@@ -14,7 +14,7 @@ exports.fetchAndSaveExternalProducts = async (req, res) => {
       const name = p.title;
       const description = p.description;
       const price = p.price;
-      const retail_price = p.price + 10; // simple logic
+      const retail_price = p.price + 10;
       const category_name = p.category;
 
       // 2. Ensure category exists
