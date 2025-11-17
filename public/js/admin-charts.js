@@ -33,7 +33,7 @@ fetch('/api/charts/data')
                   labels: revenueByCategory.map(c => c.category_name),
                   datasets: [{
                       data: revenueByCategory.map(c => parseFloat(c.revenue)),
-                      backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796']
+                      backgroundColor: ['#6213c9ff', '#07bf3eff', '#22b7ceff', '#fcb11aff', '#b31616ff', '#1023acff']
                   }]
               },
               options: {
@@ -58,7 +58,7 @@ fetch('/api/charts/data')
           datasets: [{
             label: 'Units Sold',
             data: topProducts.map(p => parseInt(p.units_sold)),
-            backgroundColor: '#8604bdff'
+            backgroundColor: '#244fceff'
           }]
         },
         options: { indexAxis: 'y', responsive: true, scales: { x: { beginAtZero: true } } }
