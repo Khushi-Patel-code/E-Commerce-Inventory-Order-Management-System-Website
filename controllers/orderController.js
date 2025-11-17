@@ -2,8 +2,8 @@ const pool = require('../db/connection');
 const { Parser } = require('json2csv');
 const PDFDocument = require('pdfkit');
 
-// Utility: generate unique order number
-function generateOrderNumber() {
+
+function generateOrderNumber() { // Utility: generate unique order number
   return 'ORD-' + Date.now();
 }
 
@@ -77,9 +77,9 @@ exports.getOrderById = async (req, res) => {
 // Add a new order
 exports.addOrder = async (req, res) => {
   try {
-    const customerId = req.session?.user?.customer_id;
+    const customerId = req.session?.user?.customer_id; //Authentication Check
     if (!customerId) {
-      return res.status(401).json({ success: false, message: "Not logged in" });
+      return res.status(401).json({ success: false, message: "Not logged in" }); //Authorization check
     }
 
     const {
