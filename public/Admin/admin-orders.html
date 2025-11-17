@@ -313,6 +313,7 @@ function openUpdateModal(order) {
 }
 
 /*SUBMIT UPDATE*/
+/*SUBMIT UPDATE*/
 async function submitUpdateOrder(event) {
     event.preventDefault();
 
@@ -324,26 +325,51 @@ async function submitUpdateOrder(event) {
         total: document.getElementById("update_total").value,
     };
 
+    // 💡 CLIENT-SIDE VALIDATION
+    // Temporarily add a placeholder customer_id so the validator can run on status/total/address
+    const dataWithId = { ...data, customer_id: 1 }; // Use a dummy ID
+    const validationError = validateOrderData(dataWithId);
+    if (validationError) {
+        showError(validationError);
+        return;
+    }
     
-    const res = await fetch(`${API_BASE}/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-    });
+    try {
+        const res = await fetch(`${API_BASE}/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
 
-   const json = await res.json();
+        // 💡 Check for non-200 status codes (Server-side error handling)
+        const json = await res.json();
+        
+        if (!res.ok) {
+            showError(json.message || `API Error: Status ${res.status}`);
+            // Close the update modal if it's open
+            const updateModal = bootstrap.Modal.getInstance(document.getElementById("updateOrderModal"));
+            if (updateModal) updateModal.hide();
+            return;
+        }
 
-    // Show the same success modal
-    document.getElementById("successMessage").innerText = json.message;
-    new bootstrap.Modal(document.getElementById("successModal")).show();
+        // Success Path
+        document.getElementById("successMessage").innerText = json.message;
+        document.getElementById("successModal").querySelector('.modal-header').classList.remove('bg-danger');
+        document.getElementById("successModal").querySelector('.modal-header').classList.add('bg-success');
+        new bootstrap.Modal(document.getElementById("successModal")).show();
 
-    // Close the update modal
-    const updateModalEl = document.getElementById("updateOrderModal");
-    const updateModal = bootstrap.Modal.getInstance(updateModalEl);
-    if (updateModal) updateModal.hide();
+        // Close the update modal
+        const updateModalEl = document.getElementById("updateOrderModal");
+        const updateModal = bootstrap.Modal.getInstance(updateModalEl);
+        if (updateModal) updateModal.hide();
 
-    loadOrders();
+        loadOrders();
+    } catch (error) {
+        showError("Could not connect to the API server for update.");
+    }
 }
+
+
 function deleteOrder(id) {
     document.getElementById("delete_order_id").value = id;
     new bootstrap.Modal(document.getElementById("deleteConfirmModal")).show();
@@ -380,6 +406,96 @@ async function submitAddOrder(event) {
     loadOrders();
 }
 
+// Data Validation
+function validateOrderData(data) {
+    const isValidNumber = (value) => {
+        const num = parseFloat(value);
+        return !isNaN(num) && num >= 0;
+    };
+
+    if (!data.customer_id || isNaN(parseInt(data.customer_id))) {
+        return "Customer ID is required and must be a valid number.";
+    }
+
+    const allowedStatuses = ["pending", "processed", "shipped", "delivered", "cancelled"];
+    if (data.order_status && !allowedStatuses.includes(data.order_status)) {
+        return `Invalid order status: '${data.order_status}'. Allowed statuses are: ${allowedStatuses.join(", ")}.`;
+    }
+
+    if (!data.shipping_address || data.shipping_address.trim() === "") {
+        return "Shipping Address is required.";
+    }
+
+    // Number Checks
+    if (data.subtotal && !isValidNumber(data.subtotal)) {
+        return "Subtotal must be a valid non-negative number.";
+    }
+    if (data.total && !isValidNumber(data.total)) {
+        return "Total must be a valid non-negative number.";
+    }
+    if (data.subtotal && data.total && parseFloat(data.total) < parseFloat(data.subtotal)) {
+         return "Total amount cannot be less than the Subtotal.";
+    }
+
+    return null; // Validation passed
+}
+
+function showError(message) {
+    const successModalEl = document.getElementById("successModal");
+    const titleEl = successModalEl.querySelector('.modal-title');
+    const headerEl = successModalEl.querySelector('.modal-header');
+    
+    // Change styling to red for error
+    headerEl.classList.remove('bg-success');
+    headerEl.classList.add('bg-danger');
+    
+    titleEl.innerText = "Error";
+    document.getElementById("successMessage").innerText = message;
+    new bootstrap.Modal(successModalEl).show();
+}
+
+async function submitAddOrder(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    const validationError = validateOrderData(data);
+    if (validationError) {
+        showError(validationError);
+        return; 
+    }
+    
+    if (data.order_status === "") {
+        data.order_status = 'cancelled';
+    }
+
+
+    try {
+        const res = await fetch(API_BASE, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const json = await res.json();
+        
+        if (!res.ok) { // Check if HTTP status is an error (400, 500)
+            showError(json.message || `API Error: Status ${res.status}`);
+            return;
+        }
+
+        document.getElementById("successMessage").innerText = json.message;
+        document.getElementById("successModal").querySelector('.modal-header').classList.remove('bg-danger');
+        document.getElementById("successModal").querySelector('.modal-header').classList.add('bg-success');
+        new bootstrap.Modal(document.getElementById("successModal")).show();
+
+        form.reset();
+        loadOrders();
+    } catch (error) {
+         showError("Could not connect to the API server.");
+    }
+}
 window.onload = loadOrders;
 </script>
 
