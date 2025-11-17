@@ -7,24 +7,44 @@ function generateOrderNumber() {
   return 'ORD-' + Date.now();
 }
 
-// Get all orders
+// Get all orders (Unified function for both default load and filtered load)
 exports.getAllOrders = async (req, res) => {
-  try {
-    const [rows] = await pool.query(`
+    // 1. Read the optional 'status' filter from the URL query
+    const statusFilter = req.query.status; 
+    
+    // Base SQL Query setup
+    let query = `
       SELECT 
         o.*, 
         c.first_name AS customer_first_name, 
         c.last_name AS customer_last_name
       FROM orders o
       JOIN customers c ON o.customer_id = c.customer_id
-      ORDER BY o.order_date
-      LIMIT 200
-    `);
-    res.json({ success: true, count: rows.length, data: rows });
-  } catch (err) {
-    console.error('Error fetching orders:', err.message || err);
-    res.status(500).json({ success: false, message: 'Failed to fetch orders' });
-  }
+    `;
+    
+    let queryParams = []; // Array to hold parameters for security
+
+    // 2. Conditionally apply the WHERE clause
+    if (statusFilter && statusFilter.trim() !== '') {
+        // If a status is present, add the WHERE condition
+        query += ` WHERE o.order_status = ?`;
+        queryParams.push(statusFilter); // Add the status value to the parameters
+    }
+    
+    // 3. Apply Ordering and Limit (Applies to both filtered and unfiltered results)
+    query += ` 
+        LIMIT 200
+    `;
+
+    try {
+        // 4. Execute the query
+        const [rows] = await pool.query(query, queryParams); 
+        
+        res.json({ success: true, count: rows.length, data: rows });
+    } catch (err) {
+        console.error('Error fetching orders:', err.message || err);
+        res.status(500).json({ success: false, message: 'Failed to fetch orders' });
+    }
 };
 
 // Get order by ID
@@ -172,7 +192,6 @@ exports.exportOrdersCSV = async (req, res) => {
         o.total AS Total
       FROM orders o
       JOIN customers c ON o.customer_id = c.customer_id
-      ORDER BY o.order_date
     `);
 
     const fields = [
@@ -207,7 +226,6 @@ exports.exportOrdersPDF = async (req, res) => {
         o.total AS Total
       FROM orders o
       JOIN customers c ON o.customer_id = c.customer_id
-      ORDER BY o.order_date 
     `);
 
     const doc = new PDFDocument({ margin: 30, size: "A4" });
