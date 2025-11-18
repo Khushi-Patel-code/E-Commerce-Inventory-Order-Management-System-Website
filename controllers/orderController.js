@@ -111,7 +111,7 @@ exports.getOrderById = async (req, res) => {
   }
 };
 
-// Add a new order (customer checkout)
+/*// Add a new order (customer checkout)
 exports.addOrder = async (req, res) => {
   try {
     const customerId = req.user?.id; // JWT should carry customer_id
@@ -160,7 +160,112 @@ exports.addOrder = async (req, res) => {
     console.error('Error adding order:', err.message || err);
     res.status(500).json({ success: false, message: 'Failed to create order' });
   }
+};*/
+
+
+// Add a new order (customer checkout)
+exports.addOrder = async (req, res) => {
+  try {
+    const customerId = req.user?.id;
+    if (!customerId) {
+      return res.status(401).json({ success: false, message: "Not logged in" });
+    }
+
+    const {
+      order_status,
+      shipping_address,
+      billing_address,
+      subtotal,
+      tax,
+      shipping_fee,
+      total,
+      created_by,
+      cart // frontend must send cart array
+    } = req.body;
+
+    const order_number = generateOrderNumber();
+
+    // 1. Insert order
+    const [result] = await pool.query(
+      `INSERT INTO orders 
+      (order_number, customer_id, order_status, shipping_address, billing_address, subtotal, tax, shipping_fee, total, created_by)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        order_number,
+        customerId,
+        order_status || 'pending',
+        shipping_address,
+        billing_address || null,
+        subtotal || 0,
+        tax || 0,
+        shipping_fee || 0,
+        total || 0,
+        created_by || null,
+      ]
+    );
+
+    const orderId = result.insertId;
+
+    // 2. Insert order items + decrement inventory
+    if (Array.isArray(cart)) {
+      for (const item of cart) {
+        // Save order item
+        await pool.query(
+          `INSERT INTO order_items (order_id, product_id, warehouse_id, quantity, unit_price, line_total)
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [
+            orderId,
+            item.product_id,
+            item.warehouse_id || null, // optional
+            item.quantity,
+            item.price,
+            item.quantity * item.price
+          ]
+        );
+
+        // Decrement inventory (safe: never below 0)
+        await pool.query(
+          `UPDATE inventory 
+           SET quantity = GREATEST(0, quantity - ?) 
+           WHERE product_id = ? 
+           ${item.warehouse_id ? 'AND warehouse_id = ?' : ''}
+           LIMIT 1`,
+          item.warehouse_id
+            ? [item.quantity, item.product_id, item.warehouse_id]
+            : [item.quantity, item.product_id]
+        );
+
+        // Optionally: log stock movement
+        await pool.query(
+          `INSERT INTO stock_movements (product_id, warehouse_id, movement_type, reference_id, quantity_change, note, created_by)
+           VALUES (?, ?, 'sale', ?, ?, ?, ?)`,
+          [
+            item.product_id,
+            item.warehouse_id || 1, // fallback warehouse
+            order_number,
+            -item.quantity,
+            'Order checkout',
+            created_by || null
+          ]
+        );
+      }
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Order created successfully',
+      order_id: orderId,
+      order_number,
+    });
+  } catch (err) {
+    console.error('Error adding order:', err.message || err);
+    res.status(500).json({ success: false, message: 'Failed to create order' });
+  }
 };
+
+
+
+
 
 // Update order
 exports.updateOrder = async (req, res) => {
