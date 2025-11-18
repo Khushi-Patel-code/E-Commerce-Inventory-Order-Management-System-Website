@@ -3,8 +3,8 @@ const pool = require('../db/connection');
 const { Parser } = require('json2csv');
 const PDFDocument = require('pdfkit');
 
-// Utility: generate unique order number
-function generateOrderNumber() {
+
+function generateOrderNumber() { // Utility: generate unique order number
   return 'ORD-' + Date.now();
 }
 
@@ -34,8 +34,11 @@ exports.getMyOrders = async (req, res) => {
 /*
 // Get all orders (admin/staff view)
 exports.getAllOrders = async (req, res) => {
-  try {
-    const [rows] = await pool.query(`
+    // 1. Read the optional 'status' filter from the URL query
+    const statusFilter = req.query.status; 
+    
+    // Base SQL Query setup
+    let query = `
       SELECT 
         o.*, 
         c.first_name AS customer_first_name, 
@@ -113,7 +116,7 @@ exports.addOrder = async (req, res) => {
   try {
     const customerId = req.user?.id; // JWT should carry customer_id
     if (!customerId) {
-      return res.status(401).json({ success: false, message: "Not logged in" });
+      return res.status(401).json({ success: false, message: "Not logged in" }); //Authorization check
     }
 
     const {
@@ -226,7 +229,6 @@ exports.exportOrdersCSV = async (req, res) => {
         o.total AS Total
       FROM orders o
       JOIN customers c ON o.customer_id = c.customer_id
-      ORDER BY o.order_date
     `);
 
     const fields = [
@@ -261,7 +263,6 @@ exports.exportOrdersPDF = async (req, res) => {
         o.total AS Total
       FROM orders o
       JOIN customers c ON o.customer_id = c.customer_id
-      ORDER BY o.order_date 
     `);
 
     const doc = new PDFDocument({ margin: 30, size: "A4" });

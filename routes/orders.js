@@ -30,10 +30,7 @@ const express = require('express');
 const router = express.Router();
 const orderController = require('../controllers/orderController');
 
-const {
-  validateCreateOrder,
-  validateUpdateOrder
-} = require('../validators/orderValidator');
+const {validateCreateOrder,validateUpdateOrder} = require('../validators/orderValidator');
 
 const { authenticate, requireRole } = require('../utils/authMiddleware');
 

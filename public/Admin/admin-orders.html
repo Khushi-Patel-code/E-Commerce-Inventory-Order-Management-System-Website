@@ -67,8 +67,9 @@
 
         <!-- Buttons -->
         <div class="mb-3">
-            <button class="btn btn-primary me-2" onclick="loadOrders()">Load Recent Orders</button>
-
+            <button class="btn btn-primary me-2" onclick="currentFilterStatus = ''; loadOrders()">Load Recent Orders</button>
+            <button class="btn btn-secondary me-2" onclick="openFilterModal()">
+            <i class="fa fa-filter me-1"></i> Filter Orders</button>
             
             <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#addOrderModal">
                 <i class="fa fa-plus"></i> Add Order
@@ -220,30 +221,30 @@ async function loadOrders() {
         </tr>
     `;
 
-    let body = "";
-    rows.forEach(o => {
-        body += `
-            <tr>
-                <td>${o.order_id}</td>
-                <td>${o.order_number}</td>
-                <td>${o.customer_first_name} ${o.customer_last_name}</td>
-                <td>${o.order_status}</td>
-                <td>${new Date(o.order_date).toLocaleString()}</td>
-                <td>$${o.total}</td>
-                <td>
-                    <button class="btn btn-sm btn-info me-1" onclick="viewOrder(${o.order_id})">
-                        <i class="fa fa-eye"></i>
-                    </button>
-                    <button class="btn btn-sm btn-warning me-1" onclick='openUpdateModal(${JSON.stringify(o)})'>
-                        <i class="fa fa-edit"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteOrder(${o.order_id})">
-                        <i class="fa fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `;
-    });
+        let body = "";
+        rows.forEach(o => {
+            body += `
+                <tr>
+                    <td>${o.order_id}</td>
+                    <td>${o.order_number}</td>
+                    <td>${o.customer_first_name} ${o.customer_last_name}</td>
+                    <td>${o.order_status}</td>
+                    <td>${new Date(o.order_date).toLocaleString()}</td>
+                    <td>$${o.total}</td>
+                    <td>
+                        <button class="btn btn-sm btn-info me-1" onclick="viewOrder(${o.order_id})">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-warning me-1" onclick='openUpdateModal(${JSON.stringify(o)})'>
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteOrder(${o.order_id})">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
 
     document.getElementById("ordersHead").innerHTML = head;
     document.getElementById("ordersBody").innerHTML = body;
@@ -257,16 +258,18 @@ async function loadOrders() {
 
 /* SEARCH ORDER BY ID */
 async function searchOrderById() {
+    // ... (Your original searchOrderById function) ...
     const id = document.getElementById("searchOrderId").value;
     if (!id) return alert("Enter an Order ID!");
 
     const res = await fetch(`${API_BASE}/${id}`);
-    const json = await res.json();
-
-    if (!json.success) {
-        alert("Order not found");
+    
+    if (!res.ok) {
+        showError("Order not found or API error.");
         return;
     }
+    
+    const json = await res.json();
 
     const o = json.data;
 
@@ -286,6 +289,7 @@ async function searchOrderById() {
             <td>$${o.total}</td>
         </tr>
     `;
+    document.getElementById("status").innerText = `Showing result for Order ID: ${id}.`;
 }
 
 
@@ -384,7 +388,10 @@ async function submitUpdateOrder(event) {
     const updateModal = bootstrap.Modal.getInstance(updateModalEl);
     if (updateModal) updateModal.hide();
 
-    loadOrders();
+        loadOrders();
+    } catch (error) {
+        showError("Could not connect to the API server for update.");
+    }
 }
 
 /* DELETE ORDER (CONFIRM MODAL) */
@@ -448,6 +455,32 @@ window.onload = loadOrders;
       </div>
     </div>
   </div>
+</div>
+
+<div class="modal fade" id="filterStatusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title">Filter Orders by Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label for="filterStatusSelect" class="form-label">Select Order Status:</label>
+                <select class="form-select" id="filterStatusSelect">
+                    <option value="">-- Show All Orders --</option>
+                    <option value="pending">Pending</option>
+                    <option value="processed">Processed</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="applyStatusFilter()">Apply Filter</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 </body>

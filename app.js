@@ -14,7 +14,7 @@ const customerProducts = require('./routes/customerProducts');
 const adminRoutes = require('./routes/admin');
 const authRoutes = require('./routes/auth');
 const customerRoutes = require('./routes/customers');
-const ordersRoutes = require('./routes/orders');
+const ordersRoutes = require('./routes/orders'); 
 const webserviceRoutes = require('./routes/webservice');
 app.use("/api/webservice", require("./routes/webservice"));
 app.use(express.static('public'));
@@ -32,7 +32,7 @@ app.use('/api/products', productsRouter);
 app.use('/auth', authRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/admin', adminRoutes);
-app.use('/api/orders', ordersRoutes);
+app.use('/api/orders', ordersRoutes); 
 
 const warehousesRoutes = require('./routes/warehouse');
 app.use('/api/warehouses', warehousesRoutes);

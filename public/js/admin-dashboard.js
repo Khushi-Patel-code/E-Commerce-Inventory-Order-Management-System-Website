@@ -82,7 +82,7 @@ function loadDashboardCharts() {
                         datasets: [{
                             label: 'Revenue ($)',
                             data: revenueVsDate.map(d => parseFloat(d.revenue)),
-                            borderColor: '#4e73df',
+                            borderColor: '#244fceff',
                             backgroundColor: 'rgba(78,115,223,0.2)',
                             fill: true,
                             tension: 0.4
@@ -101,7 +101,7 @@ function loadDashboardCharts() {
                         labels: revenueByCategory.map(c => c.category_name),
                         datasets: [{
                             data: revenueByCategory.map(c => parseFloat(c.revenue)),
-                            backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796']
+                            backgroundColor: ['#6213c9ff', '#07bf3eff', '#22b7ceff', '#fcb11aff', '#b31616ff', '#1023acff']
                         }]
                     },
                     options: {
@@ -126,7 +126,7 @@ function loadDashboardCharts() {
                         datasets: [{
                             label: 'Units Sold',
                             data: topProducts.map(p => parseInt(p.units_sold)),
-                            backgroundColor: '#3d08baff'
+                            backgroundColor: '#244fceff'
                         }]
                     },
                     options: { indexAxis: 'y', responsive: true, scales: { x: { beginAtZero: true } } }
