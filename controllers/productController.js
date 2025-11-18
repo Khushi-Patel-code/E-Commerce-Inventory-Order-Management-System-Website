@@ -8,14 +8,23 @@ const PDFDocument = require('pdfkit');
 exports.getAllProducts = async (req, res) => {
   try {
     const [rows] = await pool.query(`
-      SELECT p.product_id, p.product_name, p.description, p.price,
-             IFNULL(SUM(i.quantity), 0) AS stock
-      FROM products p
-      LEFT JOIN inventory i ON p.product_id = i.product_id
-      WHERE p.active = 1
-      GROUP BY p.product_id
-      LIMIT 200
-      `);
+  SELECT 
+      p.product_id,
+      p.sku,
+      p.product_name,
+      p.description,
+      p.category_id,
+      p.price,
+      p.retail_price,
+      p.active,
+      p.created_at,
+      IFNULL(SUM(i.quantity), 0) AS stock
+  FROM products p
+  LEFT JOIN inventory i ON p.product_id = i.product_id
+  GROUP BY p.product_id
+  ORDER BY p.product_id
+  LIMIT 200
+`);
 
     res.json({ success: true, count: rows.length, data: rows });
   } catch (err) {

@@ -102,8 +102,8 @@
                 <label>Description</label>
                 <textarea class="form-control mb-2" name="description"></textarea>
 
-                <label>Category ID (Optional)</label>
-                <input type="number" class="form-control mb-2" name="category_id">
+                <label>Category ID</label>
+                <input type="number" class="form-control mb-2" name="category_id" required>
 
                 <label>Price</label>
                 <input type="number" step="0.01" class="form-control mb-2" name="price" required>
@@ -441,7 +441,7 @@ async function loadExternalProducts() {
     document.getElementById("status").innerText = "Fetching and saving external products (This might take a few seconds)...";
     
     try {
-        const res = await fetch(`${EXTERNAL_API_BASE}/external/fetch-external-products`, {
+        const res = await fetch(`${EXTERNAL_API_BASE}/fetch-external-products`, {
             method: "POST",
             headers: { "Content-Type": "application/json" }
         });

@@ -352,45 +352,50 @@ function openUpdateModal(order) {
     new bootstrap.Modal(document.getElementById("updateOrderModal")).show();
 }
 
-/* SUBMIT UPDATE */
+/* SUBMIT UPDATE (CORRECTED) */
 async function submitUpdateOrder(event) {
-
     event.preventDefault();
     const id = document.getElementById("update_order_id").value;
-   
-    //debug
-    console.log("submitUpdateOrder fired for order", id);
-    
-    const data = {
-        order_status: document.getElementById("update_status").value,
-        shipping_address: document.getElementById("update_shipping_address").value,
-        total: document.getElementById("update_total").value,
-    };
     const token = localStorage.getItem('token');
 
-    //debug
-    console.log("Token being sent:", token);
+    try {
+        const data = {
+            order_status: document.getElementById("update_status").value,
+            shipping_address: document.getElementById("update_shipping_address").value,
+            total: document.getElementById("update_total").value,
+        };
 
-    const res = await fetch(`${API_BASE}/${id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(data)
-    });
+        const res = await fetch(`${API_BASE}/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
 
-    const json = await res.json();
-    document.getElementById("successMessage").innerText = json.message;
-    new bootstrap.Modal(document.getElementById("successModal")).show();
+        const json = await res.json();
+        
+        // Ensure you have a showError function defined, or change this to alert/console.log if not.
+        if (!res.ok) {
+            alert(`Update Failed: ${json.message || 'Unknown error'}`);
+            return;
+        }
 
-    const updateModalEl = document.getElementById("updateOrderModal");
-    const updateModal = bootstrap.Modal.getInstance(updateModalEl);
-    if (updateModal) updateModal.hide();
+        document.getElementById("successMessage").innerText = json.message;
+        new bootstrap.Modal(document.getElementById("successModal")).show();
 
+        const updateModalEl = document.getElementById("updateOrderModal");
+        const updateModal = bootstrap.Modal.getInstance(updateModalEl);
+        if (updateModal) updateModal.hide();
+
+        // Reload orders after successful update
         loadOrders();
+        
     } catch (error) {
-        showError("Could not connect to the API server for update.");
+        // Assuming you have a function called showError, otherwise use alert()
+        console.error("Error submitting update:", error);
+        alert("Could not connect to the API server for update.");
     }
 //}
 
