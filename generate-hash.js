@@ -1,3 +1,4 @@
+//generate hash.js
 const bcrypt = require('bcrypt');
 
 const password = 'jay1234';

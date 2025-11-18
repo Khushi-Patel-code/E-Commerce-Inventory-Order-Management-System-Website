@@ -22,13 +22,18 @@
         <input type="password" name="password" placeholder="Password" minlength="6" required />
         <div id="passwordError" class="error-message"></div>
 
-        <input type="text" name="phone" placeholder="Phone" />
-        <input type="text" name="billing_address" placeholder="Billing Address"/>
-        <input type="text" name="shipping_address" placeholder="Shipping Address" />
+        <!-- confirmPassword to match backend validation -->
+        <input type="password" name="confirmPassword" placeholder="Confirm Password" minlength="6" required />
+        <div id="confirmPasswordError" class="error-message"></div>
+
+        <input type="text" name="phone" placeholder="Phone" required/>
+        <input type="text" name="billing_address" placeholder="Billing Address" required/>
+        <input type="text" name="shipping_address" placeholder="Shipping Address" required/>
+
         <button type="submit">Register</button>
     </form>
 </div>
 
-    <script src="js/customer-auth.js"></script>
+<script src="js/customer-auth.js"></script>
 </body>
 </html>

@@ -1,3 +1,4 @@
+// controllers/orderController.js
 const pool = require('../db/connection');
 const { Parser } = require('json2csv');
 const PDFDocument = require('pdfkit');
@@ -7,7 +8,31 @@ function generateOrderNumber() {
   return 'ORD-' + Date.now();
 }
 
-// Get all orders
+//Get orders for the logged-in customer
+exports.getMyOrders = async (req, res) => {
+  try {
+    const customerId = req.user?.id;
+    if (!customerId) {
+      return res.status(401).json({ success: false, message: "Not logged in "});
+    }
+
+    const [rows] = await pool.query(
+      `SELECT o.*, c.first_name, c.last_name
+      FROM orders o
+      JOIN customers c ON o.customer_id = c.customer_id
+      WHERE o.customer_id = ?
+      ORDER BY o.order_date DESC`,
+      [customerId]
+    );
+
+    res.json({ success: true, count: rows.length, data: rows });
+  } catch (err) {
+    console.error("Error fetching customer orders:", err.message || err);
+    res.status(500).json({ success: false, message: "Failed to fetch orders" });
+  }
+};
+/*
+// Get all orders (admin/staff view)
 exports.getAllOrders = async (req, res) => {
   try {
     const [rows] = await pool.query(`
@@ -20,6 +45,35 @@ exports.getAllOrders = async (req, res) => {
       ORDER BY o.order_date
       LIMIT 200
     `);
+    res.json({ success: true, count: rows.length, data: rows });
+  } catch (err) {
+    console.error('Error fetching orders:', err.message || err);
+    res.status(500).json({ success: false, message: 'Failed to fetch orders' });
+  }
+};*/
+
+// Get all orders (admin/staff view, with optional status filter)
+exports.getAllOrders = async (req, res) => {
+  const statusFilter = req.query.status; 
+  let query = `
+    SELECT 
+      o.*, 
+      c.first_name AS customer_first_name, 
+      c.last_name AS customer_last_name
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+  `;
+  const params = [];
+
+  if (statusFilter && statusFilter.trim() !== '') {
+    query += ` WHERE o.order_status = ?`;
+    params.push(statusFilter);
+  }
+
+  query += ` ORDER BY o.order_date LIMIT 200`;
+
+  try {
+    const [rows] = await pool.query(query, params);
     res.json({ success: true, count: rows.length, data: rows });
   } catch (err) {
     console.error('Error fetching orders:', err.message || err);
@@ -54,10 +108,10 @@ exports.getOrderById = async (req, res) => {
   }
 };
 
-// Add a new order
+// Add a new order (customer checkout)
 exports.addOrder = async (req, res) => {
   try {
-    const customerId = req.session?.user?.customer_id;
+    const customerId = req.user?.id; // JWT should carry customer_id
     if (!customerId) {
       return res.status(401).json({ success: false, message: "Not logged in" });
     }
@@ -260,6 +314,7 @@ exports.exportOrdersPDF = async (req, res) => {
         doc.strokeColor("black").rect(x, y, totalTableWidth, rowHeight).stroke();
         y += rowHeight;
         doc.font("Helvetica").fontSize(10);
+
       }
 
       // Alternating row background

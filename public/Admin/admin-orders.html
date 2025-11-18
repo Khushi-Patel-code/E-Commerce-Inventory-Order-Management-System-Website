@@ -1,3 +1,4 @@
+<!--admin-orders.html-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,6 +77,20 @@
             <button class="btn btn-warning me-2" onclick="exportCSV()"><i class="fa-solid fa-file-csv me-1"></i> Export CSV</button>
             <button class="btn btn-danger" onclick="exportPDF()"><i class="fa-solid fa-file-pdf me-1"></i> Export PDF</button>
         </div>
+
+        <!-- Status Filter -->
+<div class="d-flex mb-3">
+  <label for="statusFilter" class="me-2">Filter by status:</label>
+  <select id="statusFilter" class="form-select w-auto me-2">
+    <option value="">All</option>
+    <option value="pending">Pending</option>
+    <option value="processed">Processed</option>
+    <option value="shipped">Shipped</option>
+    <option value="delivered">Delivered</option>
+    <option value="cancelled">Cancelled</option>
+  </select>
+  <button class="btn btn-secondary" onclick="loadOrders()">Apply</button>
+</div>
 
         <div id="status" class="text-muted mb-2"></div>
 
@@ -166,7 +181,7 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-warning">Update Order</button>
+                <button type="submit" class="btn btn-warning">Update Order</button>
             </div>
         </form>
     </div>
@@ -176,19 +191,22 @@
 <script>
 const API_BASE = "http://localhost:3000/api/orders";
 
-/* EXISTING FUNCTIONS (UNCHANGED) */
-/* ---------------------------
-    1. LOAD RECENT ORDERS
------------------------------*/
+/* LOAD RECENT ORDERS */
 async function loadOrders() {
     document.getElementById("status").innerText = "Loading...";
 
-    const res = await fetch(`${API_BASE}`);
+    const status = document.getElementById("statusFilter")?.value || "";
+    let url = `${API_BASE}`;
+    if (status) {
+        url += `?status=${encodeURIComponent(status)}`;
+    }
+
+    const res = await fetch(url);
     const json = await res.json();
 
     if (!json.success) return;
 
-    const rows = json.data // shows all data
+    const rows = json.data;
 
     let head = `
         <tr class="table-dark">
@@ -229,15 +247,17 @@ async function loadOrders() {
 
     document.getElementById("ordersHead").innerHTML = head;
     document.getElementById("ordersBody").innerHTML = body;
-    document.getElementById("status").innerText = `Showing ${rows.length} recent orders.`;
+
+    document.getElementById("status").innerText = 
+      `Showing ${rows.length} ${status ? `orders with status "${status}"` : "recent orders"}.`;
+
+
+    //document.getElementById("status").innerText = `Showing ${rows.length} recent orders.`;
 }
 
-/* ---------------------------
-    2. SEARCH ORDER BY ID
------------------------------*/
+/* SEARCH ORDER BY ID */
 async function searchOrderById() {
     const id = document.getElementById("searchOrderId").value;
-
     if (!id) return alert("Enter an Order ID!");
 
     const res = await fetch(`${API_BASE}/${id}`);
@@ -267,42 +287,58 @@ async function searchOrderById() {
         </tr>
     `;
 }
-/* ---------------------------
-    3. DELETE ORDER
------------------------------*/
-async function deleteOrder(id) {
-    if (!confirm("Are you sure you want to delete this order?")) return;
 
-    const res = await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
-    const json = await res.json();
 
-    alert(json.message);
-    loadOrders();
-}
-function exportCSV() { window.location.href = `${API_BASE}/export/csv`; }
-function exportPDF() { window.location.href = `${API_BASE}/export/pdf`; }
 
-/*ADD NEW ORDER */
-async function submitAddOrder(event) {
-    event.preventDefault();
-
-    const form = event.target;
-    const data = Object.fromEntries(new FormData(form).entries());
-
-    const res = await fetch(API_BASE, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
+/* EXPORT CSV */
+async function exportCSV() {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/export/csv`, {
+        headers: { "Authorization": `Bearer ${token}` }
     });
 
-    const json = await res.json();
-    alert(json.message);
+    if (!res.ok) {
+        const text = await res.text();
+        alert(`Failed to export CSV: ${text}`);
+        return;
+    }
 
-    form.reset();
-    loadOrders();
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'orders.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
 }
 
-/*OPEN UPDATE MODAl */
+/* EXPORT PDF */
+async function exportPDF() {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/export/pdf`, {
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    if (!res.ok) {
+        const text = await res.text();
+        alert(`Failed to export PDF: ${text}`);
+        return;
+    }
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'orders.pdf';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+}
+
+
+
+/* OPEN UPDATE MODAL */
 function openUpdateModal(order) {
     document.getElementById("update_order_id").value = order.order_id;
     document.getElementById("update_status").value = order.order_status;
@@ -312,71 +348,66 @@ function openUpdateModal(order) {
     new bootstrap.Modal(document.getElementById("updateOrderModal")).show();
 }
 
-/*SUBMIT UPDATE*/
+/* SUBMIT UPDATE */
 async function submitUpdateOrder(event) {
+
     event.preventDefault();
-
     const id = document.getElementById("update_order_id").value;
-
+   
+    //debug
+    console.log("submitUpdateOrder fired for order", id);
+    
     const data = {
         order_status: document.getElementById("update_status").value,
         shipping_address: document.getElementById("update_shipping_address").value,
         total: document.getElementById("update_total").value,
     };
+    const token = localStorage.getItem('token');
 
-    
+    //debug
+    console.log("Token being sent:", token);
+
     const res = await fetch(`${API_BASE}/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(data)
     });
 
-   const json = await res.json();
-
-    // Show the same success modal
+    const json = await res.json();
     document.getElementById("successMessage").innerText = json.message;
     new bootstrap.Modal(document.getElementById("successModal")).show();
 
-    // Close the update modal
     const updateModalEl = document.getElementById("updateOrderModal");
     const updateModal = bootstrap.Modal.getInstance(updateModalEl);
     if (updateModal) updateModal.hide();
 
     loadOrders();
 }
+
+/* DELETE ORDER (CONFIRM MODAL) */
 function deleteOrder(id) {
     document.getElementById("delete_order_id").value = id;
     new bootstrap.Modal(document.getElementById("deleteConfirmModal")).show();
 }
+
 async function confirmDelete() {
     const id = document.getElementById("delete_order_id").value;
+    const token = localStorage.getItem('token');
 
-    const res = await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
-    const json = await res.json();
-
-    document.getElementById("successMessage").innerText = json.message;
-    new bootstrap.Modal(document.getElementById("successModal")).show();
-
-    loadOrders();
-}
-async function submitAddOrder(event) {
-    event.preventDefault();
-
-    const form = event.target;
-    const data = Object.fromEntries(new FormData(form).entries());
-
-    const res = await fetch(API_BASE, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
+    const res = await fetch(`${API_BASE}/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
     });
 
     const json = await res.json();
-
     document.getElementById("successMessage").innerText = json.message;
     new bootstrap.Modal(document.getElementById("successModal")).show();
 
-    form.reset();
     loadOrders();
 }
 

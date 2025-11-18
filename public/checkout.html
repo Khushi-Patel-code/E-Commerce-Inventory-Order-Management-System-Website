@@ -1,70 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Confirm Checkout</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; }
-    form { max-width: 500px; margin: auto; }
-    label { display: block; margin-top: 1rem; }
-    input { width: 100%; padding: 0.5rem; margin-top: 0.25rem; }
-    button { margin-top: 1.5rem; padding: 0.75rem 1.5rem; }
-  </style>
-</head>
-<body>
-  <h2>Confirm Your Order</h2>
-  <form id="checkoutForm">
-    <label>Shipping Address
-      <input type="text" id="shippingAddress" name="shipping_address" required />
-    </label>
+<!-- checkout.html -->
+<form id="checkoutForm">
+  <label>Shipping Address
+    <input type="text" id="shippingAddress" required />
+  </label>
+  <label>Billing Address
+    <input type="text" id="billingAddress" required />
+  </label>
+  <button type="submit">Confirm Order</button>
+</form>
 
-    <label>Billing Address
-      <input type="text" id="billingAddress" name="billing_address" required />
-    </label>
+<script>
+document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    <button type="submit">Place Order</button>
-  </form>
+  const shipping_address = document.getElementById('shippingAddress').value;
+  const billing_address = document.getElementById('billingAddress').value;
+  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-  <script>
-    // Example: pre-fill from session or API
-    async function loadUserDetails() {
-      const res = await fetch('/api/customers/me'); // backend route to get logged-in user
-      const user = await res.json();
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert('You must be logged in to place an order.');
+    return;
+  }
 
-      if (user.success) {
-        document.getElementById('shippingAddress').value = user.data.shipping_address || '';
-        document.getElementById('billingAddress').value = user.data.billing_address || '';
-      }
-    }
+  try {
+    const subtotal = cart.reduce((sum, i) => sum + (parseFloat(i.price) * (i.quantity || 1)), 0);
+    const total = subtotal; // adjust if you add tax/shipping later
 
-    loadUserDetails();
-
-    document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const shippingAddress = document.getElementById('shippingAddress').value;
-      const billingAddress = document.getElementById('billingAddress').value;
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
-      const res = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          shipping_address: shippingAddress,
-          billing_address: billingAddress,
-          items: cart
-        })
-      });
-
-      const result = await res.json();
-      if (result.success) {
-        alert('Order placed successfully!');
-        localStorage.removeItem('cart');
-        window.location.href = 'customer-orders.html';
-      } else {
-        alert('Failed to place order: ' + result.message);
-      }
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        shipping_address,
+        billing_address,
+        subtotal,
+        tax: 0,
+        shipping_fee: 0,
+        total,
+        order_status: 'pending'
+      })
     });
-  </script>
-</body>
-</html>
+
+    const result = await res.json();
+
+    if (result.success) {
+      alert('Order placed successfully!');
+      localStorage.removeItem('cart');
+      // Redirect to the correct file
+      window.location.href = 'customer-orders.html';
+    } else {
+      alert('Failed to place order: ' + (result.message || 'Unknown error'));
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Failed to place order: ' + err.message);
+  }
+});
+</script>

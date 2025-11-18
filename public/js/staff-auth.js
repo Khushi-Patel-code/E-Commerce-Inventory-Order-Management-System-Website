@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await res.json();
 
             if (result.token) {
+                //debug: show decoded JWT payload
+                console.log("Decoded token:", JSON.parse(atob(result.token.split('.')[1])));
+
+                //store token
                 localStorage.setItem("token", result.token);
                 localStorage.setItem("admin", JSON.stringify(result.admin));
 

@@ -53,8 +53,8 @@
         <!-- Main nav links -->
         <ul class="nav">
           <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="/products.html">Products</a></li>
-          <li class="nav-item"><a class="nav-link" href="/orders.html">My Orders</a></li>
+          <li class="nav-item"><a class="nav-link" href="/customer-products.html">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="/customer-orders.html">My Orders</a></li>
 
           <!-- Categories dropdown -->
           <li class="nav-item dropdown">
@@ -83,7 +83,7 @@
           </div>
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a id="profileLink" class="dropdown-item" href="/profile.html">Profile &amp; Settings</a></li>
-            <li><a class="dropdown-item" href="/orders.html">My Orders</a></li>
+            <li><a class="dropdown-item" href="/customer-orders.html">My Orders</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a id="logoutSmall" class="dropdown-item text-danger" href="#">Logout</a></li>
           </ul>
@@ -281,7 +281,7 @@
       window.location.href = '/customer-products.html';
     });
     document.getElementById('btnMyOrders').addEventListener('click', () => {
-      window.location.href = '/orders.html';
+      window.location.href = '/customer-orders.html';
     });
 
     // Category buttons: for now they are placeholders that redirect to categories page with query param

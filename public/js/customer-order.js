@@ -1,17 +1,27 @@
-// public/js/customer-orders.js
+// public/js/customer-order.js
 document.addEventListener('DOMContentLoaded', async () => {
   const ordersBody = document.getElementById('ordersBody');
   const status = document.getElementById('status');
 
   try {
-    const res = await fetch('/api/orders'); // backend should filter by logged-in user
-    if (!res.ok) throw new Error('Network error');
+    const token = localStorage.getItem('token');
+    if (!token) {
+      status.textContent = 'You must be logged in to view orders.';
+      return;
+    }
+
+    // ✅ Correct backend route
+    const res = await fetch('/api/orders/my', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!res.ok) throw new Error(`Network error: ${res.status}`);
     const payload = await res.json();
 
     if (!payload.success) throw new Error(payload.message || 'Server error');
     const orders = payload.data;
 
-    if (!orders.length) {
+    if (!orders || !orders.length) {
       status.textContent = 'You have no orders yet.';
       return;
     }
@@ -19,8 +29,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     ordersBody.innerHTML = orders.map(o => `
       <tr>
         <td>${o.order_number}</td>
-        <td>${new Date(o.created_at).toLocaleDateString()}</td>
-        <td>${o.status || 'Pending'}</td>
+        <td>${new Date(o.order_date).toLocaleDateString()}</td>
+        <td>${o.order_status || 'Pending'}</td>
         <td>$${Number(o.total || 0).toFixed(2)}</td>
       </tr>
     `).join('');

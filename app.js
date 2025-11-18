@@ -30,7 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/products', customerProducts);
 app.use('/api/products', productsRouter);
 app.use('/auth', authRoutes);
-app.use('/customers', customerRoutes);
+app.use('/api/customers', customerRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api/orders', ordersRoutes);
 
