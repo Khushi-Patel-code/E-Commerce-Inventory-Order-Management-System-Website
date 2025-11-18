@@ -8,28 +8,173 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        body { background-color: #f8f9fa; }
-        .product-card { background: #fff; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; }
-        .product-img { height: 180px; object-fit: cover; width: 100%; }
-        .product-body { padding: 12px; }
-        .product-title { font-size: 1.1rem; font-weight: 600; }
-        .product-price { color: #007bff; font-weight: bold; }
-        .stock-status { font-size: 0.9rem; }
+   /* Global body styling */
+
+   html {
+    scroll-behavior: smooth;
+   }
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(to top, #C471ED, #301934);
+    background-repeat: no-repeat, repeat;
+    background-size: 100%, 200%;
+    color: #FAF9F9;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    position: relative;
+    overflow-x: hidden;
+    padding-top: 70px; /* offset for fixed navbar */
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #C471ED, #301934);
+    background-size: 100% 100%;
+    opacity: 1;
+    z-index: -2;
+    transition: opacity 0.5s ease-in-out;
+}
+
+body::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url('/css/sketchFloat2.gif') repeat center;
+    background-size: 2800px;
+    opacity: 0.5;
+    animation: fadeSketches 6s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes fadeSketches {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.5; }
+}
+
+/* Container styling */
+.container-small {
+    max-width: 1200px;
+    margin: 24px auto;
+    background: #4F225E;
+    padding: 24px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 1s ease-out;
+}
+
+/* General card styling */
+.card {
+    background: #3B1A4A;
+    color: #FAF9F9;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Navbar */
+.navbar {
+    background: #0B0C2A !important;
+    color: #FAF9F9;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.2);
+}
+
+/* Product cards */
+.product-card {
+    background: #0B0C2A;
+    color: #F8F9FA;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+
+/* Card body padding so text doesn’t touch edges */
+.card-body {
+    padding: 12px;
+}
+
+/* Title, description, price, stock */
+.product-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 4px;
+    color: #FAF9F9;
+}
+
+.product-desc {
+    font-size: 0.85rem;
+    color: #d0d0d0;
+    margin-bottom: 6px;
+}
+
+.product-price {
+    color: #4da3ff;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.stock-status {
+    font-size: 0.85rem;
+    color: #C0C0C0;
+}
+
+/* Buttons */
+.product-card .btn-primary {
+    background-color: #2c3e50; /* accent button color */
+    border: none;
+    color: #fff;
+}
+
+.product-card .btn-primary:hover {
+    background-color: #4da3ff; /* hover accent */
+}
+
+/* Outline buttons (for filters, etc.) */
+.btn-outline-primary,
+.btn-outline-secondary {
+    border-color: #AA3868;
+    color: #FAF9F9;
+    background-color: #AA3868;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-secondary:hover {
+    background-color: #EF476F;
+    border-color: #EF476F;
+    color: #fff;
+}
+
+/* Muted text */
+.text-muted,
+small {
+    color: #E0E0E0 !important;
+}
+
     </style>
 </head>
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" style="background: #3b2a4a;">
     <div class="container">
-        <a class="navbar-brand" href="customer-dashboard.html">KPRJ</a>
+        <a class="navbar-brand fw-bold text-white" href="customer-dashboard.html">V-Shop</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="customer-products.html">Products</a></li>
                 <li class="nav-item"><a class="nav-link" href="cart.html">Cart</a></li>
                 <li class="nav-item"><a class="nav-link" href="customer-orders.html">My Orders</a></li>
-                <li class="nav-item"><a class="nav-link" href="categories.html">Categories</a></li>
-                <li class="nav-item"><a class="nav-link text-danger" href="customer-login.html">Logout</a></li>
+               <!--<li class="nav-item"><a class="nav-link" href="categories.html">Categories</a></li>-->
+                <li class="nav-item"><a class="nav-link text-danger" href="customer-login.html"><i class="fa fa-sign-out-alt me-1"></i> Logout</a></li>
             </ul>
         </div>
     </div>
@@ -37,9 +182,20 @@
 
 <!-- MAIN CONTENT -->
 <div class="container my-4">
+    <div class="card shadow-sm p-4">
     <h2 class="mb-4">Browse Products</h2>
+
+    <!-- Category Filter -->
+    <div class="mb-3">
+      <label for="categoryFilter" class="me-2">Filter by Category:</label>
+      <select id="categoryFilter" class="form-select w-auto d-inline-block">
+        <option value="">All Categories</option>
+      </select>
+    </div>
+
+
     <div id="status" class="mb-3 text-muted"></div>
-    <div id="productsGrid" class="row g-3">
+    <div id="productsGrid" class="row g-3"></div>
         <!-- Product cards injected here -->
     </div>
 </div>

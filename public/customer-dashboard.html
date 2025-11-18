@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="css/dashboard.css">
 
   <style>
-    body { background:#f8f9fa; }
+    body { background: #f8f9fa; }
     .topbar { background: #0B0C2A; box-shadow: 0 1px 6px rgba(0,0,0,0.06); 
     position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;}
     .container-small { max-width:1200px; margin: 24px auto; }
@@ -33,13 +33,12 @@
 
     /* product card */
     .product-card { background: #0B0C2A; width: 100%; color: #E0E0E0;}
-    .product-img { height:160px; object-fit:cover; background:#eee; }
+    .product-img { height:160px; object-fit:cover; background: #eee; }
     .section-title { margin-bottom:12px; }
 
     /* responsive grid */
     .cards-row { gap:1rem; display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
 
-    /* small helpers */
     .muted-small { font-size:0.85rem; color: #C0C0C0; }
   </style>
 </head>
@@ -49,23 +48,19 @@
   <nav class="topbar py-2">
     <div class="container d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center gap-3">
-        <a href="/" class="text-decoration-none fs-5"><strong>MyShop</strong></a>
+        <a href="/" class="text-decoration-none fs-5" style="color:white"><strong>V-Shop</strong></a>
         <!-- Main nav links -->
         <ul class="nav">
-          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="/customer-products.html">Products</a></li>
-          <li class="nav-item"><a class="nav-link" href="/customer-orders.html">My Orders</a></li>
+          <li class="nav-item"><a class="nav-link" href="/" style="color:white">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/customer-products.html" style="color:white">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="/customer-orders.html" style="color:white">My Orders</a></li>
 
           <!-- Categories dropdown -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
+            <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color:white">Categories</a>
             <ul class="dropdown-menu" aria-labelledby="categoriesDropdown" id="categoriesMenu">
-              <!-- categories inserted dynamically or manually -->
-              <li><a class="dropdown-item" href="#">Electronics</a></li>
-              <li><a class="dropdown-item" href="#">Apparel</a></li>
-              <li><a class="dropdown-item" href="#">Home</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="/categories.html">View all categories</a></li>
+              <!-- categories inserted dynamically -->
+             
             </ul>
           </li>
         </ul>
@@ -153,7 +148,6 @@
             </div>
           </div>
 
-          <!-- more placeholders can be added... -->
         </div>
       </div>
     </section>
@@ -166,13 +160,8 @@
       </div>
 
       <div class="card p-3">
-        <div class="d-flex flex-wrap gap-2">
-          <button class="btn btn-outline-secondary btn-sm category-btn" data-cat="electronics">Electronics</button>
-          <button class="btn btn-outline-secondary btn-sm category-btn" data-cat="apparel">Apparel</button>
-          <button class="btn btn-outline-secondary btn-sm category-btn" data-cat="home">Home</button>
-          <button class="btn btn-outline-secondary btn-sm category-btn" data-cat="sports">Sports</button>
-          <button class="btn btn-outline-secondary btn-sm category-btn" data-cat="beauty">Beauty</button>
-          <button class="btn btn-outline-secondary btn-sm category-btn" data-cat="all">All categories</button>
+        <div class="d-flex flex-wrap gap-2" id="categoryButtons">
+          <!-- category buttons inserted dynamically-->
         </div>
       </div>
     </section>
@@ -184,7 +173,7 @@
         <div class="col-sm-4 mb-3">
           <div class="card p-3 h-100">
             <div class="muted-small">Orders (30 days)</div>
-            <h3>12</h3>
+            <h3 id="orders30Count">12</h3>
             <small class="muted-small">View recent activity</small>
           </div>
         </div>
@@ -292,6 +281,149 @@
         window.location.href = `/categories.html?cat=${encodeURIComponent(cat)}`;
       });
     });
+
+
+
+
+  async function loadFeaturedProducts() {
+    try {
+      const res = await fetch('/api/products');
+      if (!res.ok) throw new Error('Network error');
+      const payload = await res.json();
+      if (!payload.success) throw new Error(payload.message || 'Server error');
+
+      const products = payload.data;
+      if (!products.length) return;
+
+      // Shuffle and take 4 random products
+      const shuffled = products.sort(() => 0.5 - Math.random());
+      const featured = shuffled.slice(0, 4);
+
+      const container = document.getElementById('featuredCards');
+      container.innerHTML = featured.map(p => `
+        <div class="card product-card">
+          <img class="card-img-top product-img" 
+               src="${p.image_url || 'https://via.placeholder.com/400x200?text=' + encodeURIComponent(p.product_name)}" 
+               alt="${p.product_name}">
+          <div class="card-body">
+            <h6 class="card-title">${p.product_name}</h6>
+            <p class="card-text muted-small">
+              ${p.description || 'No description available'}<br>
+              Price: $${Number(p.price || 0).toFixed(2)}
+            </p>
+            <div class="d-flex justify-content-between align-items-center">
+              <a href="customer-products.html#product-${p.product_id}" class="btn btn-sm btn-primary">View</a>
+              <small class="text-muted">
+                ${p.stock > 0 ? `${p.stock} in Stock` : 'Out of Stock'}
+              </small>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } catch (err) {
+      console.error('Failed to load featured products:', err);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadFeaturedProducts);
+
+
+
+
+
+
+
+
+  
+async function loadCategoriesDashboard() {
+  try {
+    const res = await fetch('/api/categories');
+    const payload = await res.json();
+    if (!payload.success) throw new Error(payload.message || 'Failed to fetch categories');
+
+    const categories = payload.data;
+
+    // Navbar dropdown
+    const menu = document.getElementById('categoriesMenu');
+    menu.innerHTML = '';
+    categories.forEach(cat => {
+      const li = document.createElement('li');
+      li.innerHTML = `<a class="dropdown-item" href="customer-products.html?category_id=${encodeURIComponent(cat.category_id)}">${cat.category_name}</a>`;
+      menu.appendChild(li);
+    });
+
+    // Divider + "All categories"
+    menu.innerHTML += `<li><hr class="dropdown-divider"></li>
+                       <li><a class="dropdown-item" href="customer-products.html">All Categories</a></li>`;
+
+    // Featured section buttons
+    const btnContainer = document.getElementById('categoryButtons');
+    btnContainer.innerHTML = '';
+    categories.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-outline-secondary btn-sm category-btn';
+      btn.textContent = cat.category_name;
+      btn.addEventListener('click', () => {
+        window.location.href = `customer-products.html?category_id=${encodeURIComponent(cat.category_id)}`;
+      });
+      btnContainer.appendChild(btn);
+    });
+
+    // Add "All categories" button
+    const allBtn = document.createElement('button');
+    allBtn.className = 'btn btn-outline-secondary btn-sm category-btn';
+    allBtn.textContent = 'All Categories';
+    allBtn.addEventListener('click', () => {
+      window.location.href = 'customer-products.html';
+    });
+    btnContainer.appendChild(allBtn);
+
+  } catch (err) {
+    console.error('Failed to load categories for dashboard:', err);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadCategoriesDashboard);
+
+
+
+
+//recent order history
+
+async function loadRecentOrdersCount() {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    const res = await fetch('/api/orders/my', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!res.ok) throw new Error('Network error');
+    const payload = await res.json();
+    if (!payload.success) throw new Error(payload.message || 'Server error');
+
+    const orders = payload.data || [];
+
+    // Filter orders from last 30 days
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 30);
+
+    const recentOrders = orders.filter(o => new Date(o.order_date) >= cutoff);
+
+    // Update dashboard count
+    document.getElementById('orders30Count').textContent = recentOrders.length;
+  } catch (err) {
+    console.error('Failed to load recent orders count:', err);
+    document.getElementById('orders30Count').textContent = '0';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadRecentOrdersCount);
+
+
+
+
     
   </script>
 

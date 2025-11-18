@@ -3,30 +3,150 @@
 <head>
   <meta charset="UTF-8">
   <title>My Orders - KPRJ</title>
-  <link rel="stylesheet" href="styles.css">
+  
+  <style>
+   
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(to top, #C471ED, #301934);
+  color: #FAF9F9;
+  min-height: 100vh;
+  margin: 0;
+  padding-top: 70px; /* offset for fixed navbar */
+  position: relative;
+}
+
+body::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url('/css/sketchFloat2.gif') repeat center;
+  background-size: 1900px;
+  opacity: 0.4;
+  animation: fadeSketches 6s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes fadeSketches {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
+}
+
+/* Navbar */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #0B0C2A;
+    color: #FAF9F9;
+    padding: 12px 24px;
+    display: flex;
+    gap: 20px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+nav a {
+  color: #FAF9F9;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+nav a:hover {
+  color: #4da3ff;
+}
+
+/* Container */
+.container-small {
+  max-width: 1200px;
+  margin: 24px auto;
+  background: #4F225E;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Orders table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #0B0C2A;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+thead th {
+  background: #2c3e50;
+  color: #FAF9F9;
+  font-weight: 600;
+  padding: 12px;
+}
+
+tbody td {
+  padding: 12px;
+  color: #E0E0E0;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+tbody tr:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+/* Status text */
+.order-status {
+  font-weight: 600;
+}
+
+.order-status.pending {
+  color: #FFB347; /* amber */
+}
+
+.order-status.completed {
+  color: #4da3ff; /* blue accent */
+}
+
+.order-status.cancelled {
+  color: #EF476F; /* red accent */
+}
+
+/* Muted status message */
+#status {
+  color: #C0C0C0;
+  margin-bottom: 12px;
+}
+  </style>
+
+
 </head>
 <body>
   <nav>
+    <a href="customer-dashboard.html">V-Shop</a>
     <a href="customer-products.html">Products</a>
     <a href="cart.html">Cart</a>
     <a href="customer-orders.html">My Orders</a>
     <a href="logout.html">Logout</a>
   </nav>
 
-  <h1>My Orders</h1>
-  <p id="status">Loading your orders...</p>
+  <div class="container-small">
+    <div class="card shadow-sm p-4">
+      <h1 class="mb-4">My Orders</h1>
+      <p id="status">Loading your orders...</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="ordersBody"></tbody>
+      </table>
+    </div>
+  </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Order #</th>
-        <th>Date</th>
-        <th>Status</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody id="ordersBody"></tbody>
-  </table>
 
   <!-- ✅ Correct script include -->
   <script src="js/customer-order.js"></script>

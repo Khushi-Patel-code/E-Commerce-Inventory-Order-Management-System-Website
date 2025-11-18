@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    // ✅ Correct backend route
+    // Correct backend route
     const res = await fetch('/api/orders/my', {
       headers: { Authorization: `Bearer ${token}` }
     });
