@@ -20,7 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
         email: formData.get('email'),
         phone: formData.get('phone') || null,
         password: formData.get('password'),
-        confirmPassword: formData.get('confirmPassword')
+        confirmPassword: formData.get('confirmPassword'),
+        billing_address: formData.get('billing_address'),
+        shipping_address: formData.get('shipping_address')    
       };
 
       console.log('Register payload', data);
