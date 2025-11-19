@@ -25,6 +25,7 @@ Also, if you intend on testing admin and customer sides at the same time, it is 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+**ADMIN LOGIN TESTING**
 For the admin side, please run the generate-hash.js file located in the root directory first `node generate-hash.js`. As there is no creation page for new admins, you need to create a new password and generate the hash for it. At the bottom of the sample values sql file, if it is not there already, add this query and paste the generated hash from your terminal:
 
 `UPDATE users
@@ -55,6 +56,7 @@ to add all changes in file
 `git commit -m "Commit message here"`
 
 `git push origin main`
+
 
 
 
