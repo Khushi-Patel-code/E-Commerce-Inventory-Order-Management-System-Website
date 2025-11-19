@@ -192,25 +192,6 @@ exports.addOrder = async (req, res) => {
 
 
 
-/*
-exports.getOrderProducts = async (req, res) => {
-  try {
-    const orderId = req.params.id;
-
-    // Example SQL join: order_items → products
-    const rows = await req.db.query(`
-      SELECT p.product_id, p.sku, p.product_name, p.price, oi.quantity
-      FROM order_items oi
-      JOIN products p ON oi.product_id = p.product_id
-      WHERE oi.order_id = ?
-    `, [orderId]);
-
-    res.json({ success: true, data: rows });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: 'Failed to fetch order products' });
-  }
-};*/
 
 // Get products for a specific order
 exports.getOrderProducts = async (req, res) => {

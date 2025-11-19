@@ -230,7 +230,10 @@ async function loadOrders() {
         url += `?status=${encodeURIComponent(status)}`;
     }
 
-    const res = await fetch(url);
+    const token = localStorage.getItem('token');
+    const res = await fetch(url, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
     const json = await res.json();
 
     if (!json.success) return;
@@ -286,11 +289,15 @@ async function loadOrders() {
 
 /* SEARCH ORDER BY ID */
 async function searchOrderById() {
-    // ... (Your original searchOrderById function) ...
+    // searchOrderById function
     const id = document.getElementById("searchOrderId").value;
     if (!id) return alert("Enter an Order ID!");
 
-    const res = await fetch(`${API_BASE}/${id}`);
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/${id}`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
     
     if (!res.ok) {
         showError("Order not found or API error.");

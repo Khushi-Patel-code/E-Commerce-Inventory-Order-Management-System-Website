@@ -10,19 +10,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    // Correct backend route
     const res = await fetch('/api/orders/my', {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { "Authorization": `Bearer ${token}` }
     });
 
-    if (!res.ok) throw new Error(`Network error: ${res.status}`);
+    if (res.status === 401 || res.status === 403) {
+      status.textContent = 'Session expired or unauthorized. Please log in again.';
+      return;
+    }
+
+    if (!res.ok) {
+      throw new Error(`Network error: ${res.status}`);
+    }
+
     const payload = await res.json();
+    if (!payload.success) {
+      throw new Error(payload.message || 'Server error');
+    }
 
-    if (!payload.success) throw new Error(payload.message || 'Server error');
     const orders = payload.data;
-
     if (!orders || !orders.length) {
       status.textContent = 'You have no orders yet.';
+      ordersBody.innerHTML = '';
       return;
     }
 
@@ -37,7 +46,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     status.textContent = `Loaded ${orders.length} order(s).`;
   } catch (err) {
-    console.error(err);
+    console.error("Error loading orders:", err);
     status.textContent = 'Failed to load orders: ' + err.message;
+    ordersBody.innerHTML = '';
   }
 });
