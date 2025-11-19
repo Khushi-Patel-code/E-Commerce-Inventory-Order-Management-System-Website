@@ -133,8 +133,12 @@ exports.updateProduct = async (req, res) => {
 
 // Delete a product
 exports.deleteProduct = async (req, res) => {
+  
   const { id } = req.params;
   try {
+    await pool.query('DELETE FROM inventory WHERE product_id = ?', [id]);
+    await pool.query('DELETE FROM order_items WHERE product_id = ?', [id]);
+    
     const [result] = await pool.query('DELETE FROM products WHERE product_id = ?', [id]);
     if (result.affectedRows === 0)
       return res.status(404).json({ success: false, message: 'Product not found' });
