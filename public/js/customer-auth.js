@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const formData = new FormData(registerForm);
 
-      // ✅ Map frontend fields to backend expectations
+      // Map frontend fields to backend expectations
       const data = {
         first_name: formData.get('first_name'),
         last_name: formData.get('last_name'),
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const result = await res.json();
         alert(result.message || 'Registered successfully!');
-        window.location.href = 'customer-login.html'; // ✅ redirect to login
+        window.location.href = 'customer-login.html'; // redirect to login
       } catch (err) {
         console.error('Registration error:', err);
         alert('Error registering. Please try again');
@@ -83,8 +83,15 @@ document.addEventListener('DOMContentLoaded', () => {
           localStorage.setItem('token', result.token);
           localStorage.setItem('role', result.role);
 
-          alert('Login successful!');
-          window.location.href = 'customer-dashboard.html';
+          // use success modal
+          document.getElementById("successMessage").innerText = "Login successful!";
+          new bootstrap.Modal(document.getElementById("successModal")).show();
+
+
+          // redirect after short delay
+          setTimeout(() => {
+            window.location.href = "customer-dashboard.html";
+          }, 1500);    
         } else {
           alert(result.message || 'Login failed');
         }

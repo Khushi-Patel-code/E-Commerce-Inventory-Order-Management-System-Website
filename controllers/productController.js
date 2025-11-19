@@ -3,34 +3,6 @@ const pool = require('../db/connection');
 const { Parser } = require('json2csv');
 const PDFDocument = require('pdfkit');
 
-// Get all products
-/*
-exports.getAllProducts = async (req, res) => {
-  try {
-    const [rows] = await pool.query(`
-      SELECT 
-        p.product_id,
-        p.sku,
-        p.product_name,
-        p.description,
-        p.category_id,
-        p.price,
-        p.retail_price,
-        p.active,
-        p.created_at,
-        IFNULL(SUM(i.quantity), 0) AS stock
-      FROM products p
-      LEFT JOIN inventory i ON p.product_id = i.product_id
-      GROUP BY p.product_id
-      ORDER BY p.product_id
-      LIMIT 200
-    `);
-    res.json({ success: true, count: rows.length, data: rows });
-  } catch (err) {
-    console.error('Error fetching products:', err.sqlMessage || err.message || err);
-    res.status(500).json({ success: false, message: 'Failed to fetch products' });
-  }
-};*/
 
 // Get all products (with optional category filter)
 exports.getAllProducts = async (req, res) => {
@@ -96,7 +68,7 @@ exports.getProductById = async (req, res) => {
 // Add a new product
 exports.addProduct = async (req, res) => {
   try {
-    const { sku, product_name, description, category_id, price, retail_price, active } = req.body;
+    const { sku, product_name, description, category_id, price, retail_price, active, quantity } = req.body;
 
     const [result] = await pool.query(
       `INSERT INTO products (sku, product_name, description, category_id, price, retail_price, active)
@@ -104,10 +76,19 @@ exports.addProduct = async (req, res) => {
       [sku, product_name, description, category_id || null, price || 0, retail_price || null, active ?? 1]
     );
 
+    const productId = result.insertId;
+
+    //Insert inventory row (default warehouse_id =1)
+    await pool.query(
+      `INSERT INTO inventory (product_id, warehouse_id, quantity)
+      VALUES (?, ?, ?)`,
+      [productId, 1, quantity || 0]
+    );
+
     res.status(201).json({
       success: true,
       message: 'Product added successfully',
-      product_id: result.insertId,
+      product_id: productId,
     });
   } catch (err) {
     console.error('Error creating product:', err.sqlMessage || err.message || err);

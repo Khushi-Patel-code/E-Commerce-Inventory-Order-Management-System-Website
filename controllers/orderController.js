@@ -31,29 +31,7 @@ exports.getMyOrders = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to fetch orders" });
   }
 };
-/*
-// Get all orders (admin/staff view)
-exports.getAllOrders = async (req, res) => {
-    // 1. Read the optional 'status' filter from the URL query
-    const statusFilter = req.query.status; 
-    
-    // Base SQL Query setup
-    let query = `
-      SELECT 
-        o.*, 
-        c.first_name AS customer_first_name, 
-        c.last_name AS customer_last_name
-      FROM orders o
-      JOIN customers c ON o.customer_id = c.customer_id
-      ORDER BY o.order_date
-      LIMIT 200
-    `);
-    res.json({ success: true, count: rows.length, data: rows });
-  } catch (err) {
-    console.error('Error fetching orders:', err.message || err);
-    res.status(500).json({ success: false, message: 'Failed to fetch orders' });
-  }
-};*/
+
 
 // Get all orders (admin/staff view, with optional status filter)
 exports.getAllOrders = async (req, res) => {
@@ -110,57 +88,6 @@ exports.getOrderById = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to fetch order' });
   }
 };
-
-/*// Add a new order (customer checkout)
-exports.addOrder = async (req, res) => {
-  try {
-    const customerId = req.user?.id; // JWT should carry customer_id
-    if (!customerId) {
-      return res.status(401).json({ success: false, message: "Not logged in" }); //Authorization check
-    }
-
-    const {
-      order_status,
-      shipping_address,
-      billing_address,
-      subtotal,
-      tax,
-      shipping_fee,
-      total,
-      created_by,
-    } = req.body;
-
-    const order_number = generateOrderNumber();
-
-    const [result] = await pool.query(
-      `INSERT INTO orders 
-      (order_number, customer_id, order_status, shipping_address, billing_address, subtotal, tax, shipping_fee, total, created_by)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        order_number,
-        customerId,
-        order_status || 'pending',
-        shipping_address,
-        billing_address || null,
-        subtotal || 0,
-        tax || 0,
-        shipping_fee || 0,
-        total || 0,
-        created_by || null,
-      ]
-    );
-
-    res.status(201).json({
-      success: true,
-      message: 'Order created successfully',
-      order_id: result.insertId,
-      order_number,
-    });
-  } catch (err) {
-    console.error('Error adding order:', err.message || err);
-    res.status(500).json({ success: false, message: 'Failed to create order' });
-  }
-};*/
 
 
 // Add a new order (customer checkout)
@@ -309,19 +236,6 @@ exports.getOrderProducts = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to fetch order products" });
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // Update order

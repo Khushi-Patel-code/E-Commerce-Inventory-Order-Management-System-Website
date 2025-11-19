@@ -87,61 +87,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
-    /*  grid.innerHTML = rows.map((p, idx) => `
-        <div class="col-md-3">
-          <div class="card product-card">
-            <img class="card-img-top product-img" 
-                 src="https://via.placeholder.com/400x200?text=${encodeURIComponent(p.product_name)}" 
-                 alt="${p.product_name}">
-            <div class="card-body">
-              <h6 class="card-title">${p.product_name}</h6>
-              <p class="card-text muted-small">
-                ${p.description || 'No description available'}<br>
-                Price: $${Number(p.price || 0).toFixed(2)}
-              </p>
-              <div class="d-flex justify-content-between align-items-center">
-                <button class="btn btn-sm btn-primary add-to-cart" data-index="${idx}">
-                  Add to Cart
-                </button>
-                <small class="text-muted">
-                  ${p.stock > 0 ? `${p.stock} in Stock` : 'Out of Stock'}
-                </small>
-              </div>
-            </div>
-          </div>
-        </div>    
-      `).join('');*/
 
       grid.innerHTML = rows.map((p, idx) => `
-  <div class="col-md-3" id="product-${p.product_id}">
-    <div class="card product-card">
-      <img class="card-img-top product-img" 
-           src="https://via.placeholder.com/400x200?text=${encodeURIComponent(p.product_name)}" 
-           alt="${p.product_name}">
-      <div class="card-body">
-        <h6 class="card-title">${p.product_name}</h6>
-        <p class="card-text muted-small">
-          ${p.description || 'No description available'}<br>
-          Price: $${Number(p.price || 0).toFixed(2)}
-        </p>
-        <div class="d-flex justify-content-between align-items-center">
-          ${
-            p.stock > 0
-              ? `<button class="btn btn-sm btn-primary add-to-cart" data-index="${idx}">
-                   Add to Cart
-                 </button>`
-              : `<button class="btn btn-sm btn-secondary" disabled>
-                   Out of Stock
-                 </button>`
-          }
-          <small class="text-muted">
-            ${p.stock > 0 ? `${p.stock} in Stock` : 'Out of Stock'}
-          </small>
+      <div class="col-md-3" id="product-${p.product_id}">
+        <div class="card product-card">
+        <img class="card-img-top product-img" 
+             src="https://via.placeholder.com/400x200?text=${encodeURIComponent(p.product_name)}" 
+             alt="${p.product_name}">
+        <div class="card-body">
+          <h6 class="card-title">${p.product_name}</h6>
+          <p class="card-text muted-small">
+            ${p.description || 'No description available'}<br>
+            Price: $${Number(p.price || 0).toFixed(2)}
+          </p>
+          <div class="d-flex justify-content-between align-items-center">
+            ${
+              p.stock > 0
+                ? `<button class="btn btn-sm btn-primary add-to-cart" data-index="${idx}">
+                     Add to Cart
+                   </button>`
+                : `<button class="btn btn-sm btn-secondary" disabled>
+                     Out of Stock
+                   </button>`
+            }
+            <small class="text-muted">
+              ${p.stock > 0 ? `${p.stock} in Stock` : 'Out of Stock'}
+            </small>
+          </div>
         </div>
       </div>
-    </div>
-  </div>    
-`).join('');
+    </div>    
+  `).join('');
 
       // Attach listeners
       document.querySelectorAll('.add-to-cart').forEach(btn => {

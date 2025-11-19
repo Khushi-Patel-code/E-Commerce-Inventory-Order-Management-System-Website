@@ -191,10 +191,6 @@
             <small class="muted-small">See alerts</small>
           </div>
         </div>
-        <div class="card p-3 shadow-sm">
-        <h4>Total Categories:</h4>
-        <p id="categoryCount" class="fs-4 fw-bold text-primary">Loading...</p>
-    </div>
       </div>
     </section>
 
@@ -326,103 +322,93 @@
   }
 
   document.addEventListener('DOMContentLoaded', loadFeaturedProducts);
-
-
-
-
-
-
-
-
   
-async function loadCategoriesDashboard() {
-  try {
-    const res = await fetch('/api/categories');
-    const payload = await res.json();
-    if (!payload.success) throw new Error(payload.message || 'Failed to fetch categories');
+  
+  async function loadCategoriesDashboard() {
+    try {
+      const res = await fetch('/api/categories');
+      const payload = await res.json();
+      if (!payload.success) throw new Error(payload.message || 'Failed to fetch categories');
 
-    const categories = payload.data;
+      const categories = payload.data;
 
-    // Navbar dropdown
-    const menu = document.getElementById('categoriesMenu');
-    menu.innerHTML = '';
-    categories.forEach(cat => {
-      const li = document.createElement('li');
-      li.innerHTML = `<a class="dropdown-item" href="customer-products.html?category_id=${encodeURIComponent(cat.category_id)}">${cat.category_name}</a>`;
-      menu.appendChild(li);
-    });
-
-    // Divider + "All categories"
-    menu.innerHTML += `<li><hr class="dropdown-divider"></li>
-                       <li><a class="dropdown-item" href="customer-products.html">All Categories</a></li>`;
-
-    // Featured section buttons
-    const btnContainer = document.getElementById('categoryButtons');
-    btnContainer.innerHTML = '';
-    categories.forEach(cat => {
-      const btn = document.createElement('button');
-      btn.className = 'btn btn-outline-secondary btn-sm category-btn';
-      btn.textContent = cat.category_name;
-      btn.addEventListener('click', () => {
-        window.location.href = `customer-products.html?category_id=${encodeURIComponent(cat.category_id)}`;
+      // Navbar dropdown
+      const menu = document.getElementById('categoriesMenu');
+      menu.innerHTML = '';
+      categories.forEach(cat => {
+        const li = document.createElement('li');
+        li.innerHTML = `<a class="dropdown-item" href="customer-products.html?category_id=${encodeURIComponent(cat.category_id)}">${cat.category_name}</a>`;
+        menu.appendChild(li);
       });
-      btnContainer.appendChild(btn);
-    });
 
-    // Add "All categories" button
-    const allBtn = document.createElement('button');
-    allBtn.className = 'btn btn-outline-secondary btn-sm category-btn';
-    allBtn.textContent = 'All Categories';
-    allBtn.addEventListener('click', () => {
-      window.location.href = 'customer-products.html';
-    });
-    btnContainer.appendChild(allBtn);
+      // Divider + "All categories"
+      menu.innerHTML += `<li><hr class="dropdown-divider"></li>
+                         <li><a class="dropdown-item" href="customer-products.html">All Categories</a></li>`;
 
-  } catch (err) {
-    console.error('Failed to load categories for dashboard:', err);
+      // Featured section buttons
+      const btnContainer = document.getElementById('categoryButtons');
+      btnContainer.innerHTML = '';
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-outline-secondary btn-sm category-btn';
+        btn.textContent = cat.category_name;
+        btn.addEventListener('click', () => {
+          window.location.href = `customer-products.html?category_id=${encodeURIComponent(cat.category_id)}`;
+        });
+        btnContainer.appendChild(btn);
+      });
+
+      // Add "All categories" button
+      const allBtn = document.createElement('button');
+      allBtn.className = 'btn btn-outline-secondary btn-sm category-btn';
+      allBtn.textContent = 'All Categories';
+      allBtn.addEventListener('click', () => {
+        window.location.href = 'customer-products.html';
+      });
+      btnContainer.appendChild(allBtn);
+
+    } catch (err) {
+      console.error('Failed to load categories for dashboard:', err);
+    }
   }
-}
 
-document.addEventListener('DOMContentLoaded', loadCategoriesDashboard);
-
+  document.addEventListener('DOMContentLoaded', loadCategoriesDashboard);
 
 
 
-//recent order history
 
-async function loadRecentOrdersCount() {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return;
+  //recent order history
 
-    const res = await fetch('/api/orders/my', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+  async function loadRecentOrdersCount() {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
 
-    if (!res.ok) throw new Error('Network error');
-    const payload = await res.json();
-    if (!payload.success) throw new Error(payload.message || 'Server error');
+      const res = await fetch('/api/orders/my', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-    const orders = payload.data || [];
+      if (!res.ok) throw new Error('Network error');
+      const payload = await res.json();
+      if (!payload.success) throw new Error(payload.message || 'Server error');
 
-    // Filter orders from last 30 days
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - 30);
+      const orders = payload.data || [];
 
-    const recentOrders = orders.filter(o => new Date(o.order_date) >= cutoff);
+      // Filter orders from last 30 days
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 30);
 
-    // Update dashboard count
-    document.getElementById('orders30Count').textContent = recentOrders.length;
-  } catch (err) {
-    console.error('Failed to load recent orders count:', err);
-    document.getElementById('orders30Count').textContent = '0';
+      const recentOrders = orders.filter(o => new Date(o.order_date) >= cutoff);
+
+      // Update dashboard count
+      document.getElementById('orders30Count').textContent = recentOrders.length;
+    } catch (err) {
+      console.error('Failed to load recent orders count:', err);
+      document.getElementById('orders30Count').textContent = '0';
+    }
   }
-}
 
-document.addEventListener('DOMContentLoaded', loadRecentOrdersCount);
-
-
-
+  document.addEventListener('DOMContentLoaded', loadRecentOrdersCount);
 
     
   </script>

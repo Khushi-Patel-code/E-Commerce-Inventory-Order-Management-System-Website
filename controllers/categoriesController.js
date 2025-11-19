@@ -1,4 +1,4 @@
-// controllers/categoryController.js
+// controllers/categoriesController.js
 const pool = require('../db/connection');
 const { Parser } = require('json2csv');
 const PDFDocument = require('pdfkit');
