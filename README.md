@@ -283,3 +283,17 @@ There is no admin creation page. To create a new admin password:
 
 <img src="Screenshots/Login Page.png" alt="Login page">
 
+
+
+<table>
+  <tr>
+    <td><img src="Screenshots/Admin dashboard.png" width="200"/></td>
+    <td><img src="Screenshots/Products.png" width="200"/></td>
+    <td><img src="Screenshots/ViewsDashboard.png" width="200"/></td>
+  </tr>
+  <tr>
+    <td><img src="Screenshots/Orders.png" width="200"/></td>
+    <td><img src="Screenshots/Filter Orders.png" width="200"/></td>
+    <td><img src="Screenshots/Update Order.png" width="200"/></td>
+  </tr>
+</table>
