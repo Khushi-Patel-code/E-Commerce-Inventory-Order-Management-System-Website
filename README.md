@@ -2,13 +2,11 @@
 
 ## Overview
 
-This project is a **full-stack e-commerce inventory and order management system** that allows administrators to manage products, categories, and orders while providing customers with a seamless shopping experience.
-
----
+This project is a **full-stack e-commerce inventory and order management system** that allows administrators to manage products, Users, and orders while providing customers with a seamless shopping experience.
 
 ## Key Features & Highlights
 
-* **Product and Category Management:** Admins can **add, edit, and delete products and categories**.
+* **Product and User Management:** Admins can **add, edit, and delete products and Users**(CRUD operations).
 * **Inventory Tracking:** Comprehensive tools to **track inventory** levels in real-time.
 * **Order Management:** Admins can **view detailed order reports** and manage the order lifecycle.
 * **Customer Experience:** Customers can **browse products, place orders, and view order history**.
@@ -16,6 +14,36 @@ This project is a **full-stack e-commerce inventory and order management system*
 * **Secure Authentication:** Supports secure authentication using **JWT** (JSON Web Tokens) and **bcrypt** for robust password hashing.
 * **Reporting & Analytics:** Includes **export functionality to CSV/PDF** and **real-time charts** for inventory tracking and sales performance analysis.
 
+## Admin Features
+
+### Product Management:
+
+* **CRUD Operations:** Add, edit, update, and delete products **manually**.
+* **API Integration:** Import external products automatically via **DummyJSON API**.
+* **Data Integrity:** Prevent duplicate entries with **SKU checks**.
+
+### Order Management:
+
+* **Order Visibility:** View and manage **all customer orders**.
+* **Status Updates:** Update order statuses (e.g., Pending, Shipped, Delivered).
+
+### User Management:
+
+* **Customer View:** View a list of registered customers.
+* **Admin Security:** Securely manage admin credentials using **hashed passwords** (bcrypt).
+
+### Data Export:
+
+* **Reporting:** Export product and order data to **CSV or PDF** for detailed reporting.
+
+### Analytics & Visualization:
+
+* **Interactive Charts:** View sales and inventory trends via **interactive charts (Chart.js)**.
+
+### Security & Session Management:
+
+* **Access Control:** **Role-based access** using **JWT** (JSON Web Tokens).
+* **Protection:** Prevent unauthorized access to sensitive admin pages.
 
 
 
