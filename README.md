@@ -179,3 +179,107 @@ There is no admin creation page. To create a new admin password:
 {
   "message": "Successfully inserted 20 external products."
 }
+```
+
+## Repository Structure
+```
+.
+├── README.md
+├── app.js
+├── controllers
+│   ├── adminController.js
+│   ├── authController.js
+│   ├── categoriesController.js
+│   ├── chartController.js
+│   ├── customerController.js
+│   ├── externalController.js
+│   ├── inventoryController.js
+│   ├── orderController.js
+│   ├── paymentController.js
+│   ├── productController.js
+│   ├── reviewsController.js
+│   ├── supplierController.js
+│   ├── viewController.js
+│   └── warehouseController.js
+├── db
+│   └── connection.js
+├── generate-hash.js
+├── package-lock.json
+├── package.json
+├── public
+│   ├── Admin
+│   │   ├── admin-charts.html
+│   │   ├── admin-dashboard.html
+│   │   ├── admin-orders.html
+│   │   ├── admin-products.html
+│   │   ├── admin-profile.html
+│   │   ├── admin-users.html
+│   │   ├── admin-views.html
+│   │   └── view-data.html
+│   ├── cart.html
+│   ├── css
+│   │   ├── customerLog.css
+│   │   ├── customerReg.css
+│   │   ├── dashboard.css
+│   │   ├── indexStyle.css
+│   │   ├── sketchFloat2.gif
+│   │   └── staffStyles.css
+│   ├── customer-dashboard.html
+│   ├── customer-login.html
+│   ├── customer-orders.html
+│   ├── customer-products.html
+│   ├── customer-register.html
+│   ├── index.html
+│   ├── js
+│   │   ├── admin-charts.js
+│   │   ├── admin-dashboard.js
+│   │   ├── admin-profile.js
+│   │   ├── cart.js
+│   │   ├── customer-auth.js
+│   │   ├── customer-order.js
+│   │   ├── customer-products.js
+│   │   ├── products.js
+│   │   ├── router.js
+│   │   └── staff-auth.js
+│   ├── orders-test.html
+│   ├── products.html
+│   ├── staff-login.html
+│   └── styles.css
+├── routes
+│   ├── admin.js
+│   ├── auth.js
+│   ├── categories.js
+│   ├── charts.js
+│   ├── customerProducts.js
+│   ├── customers.js
+│   ├── exports.js
+│   ├── external.js
+│   ├── inventory.js
+│   ├── orders.js
+│   ├── payments.js
+│   ├── products.js
+│   ├── reviews.js
+│   ├── suppliers.js
+│   ├── views.js
+│   ├── warehouse.js
+│   └── webservice.js
+├── Screenshots
+├── utils
+│   └── authMiddleware.js
+└── validators
+    ├── categoryValidator.js
+    ├── customerValidator.js
+    ├── handleValidation.js
+    ├── inventoryValidator.js
+    ├── orderValidator.js
+    ├── paymentValidator.js
+    ├── productValidator.js
+    ├── reviewValidator.js
+    ├── supplierValidator.js
+    └── warehouseValidator.js
+```
+
+## Screenshots and UI
+
+<img src="Screenshots/Login Page.png" alt="Login page">
+
