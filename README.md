@@ -4,16 +4,6 @@
 
 This project is a **full-stack e-commerce inventory and order management system** that allows administrators to manage products, Users, and orders while providing customers with a seamless shopping experience.
 
-## Key Features & Highlights
-
-* **Product and User Management:** Admins can **add, edit, and delete products and Users**(CRUD operations).
-* **Inventory Tracking:** Comprehensive tools to **track inventory** levels in real-time.
-* **Order Management:** Admins can **view detailed order reports** and manage the order lifecycle.
-* **Customer Experience:** Customers can **browse products, place orders, and view order history**.
-* **Dynamic Data Integration:** Integrates with an **external product API (DummyJSON)** to fetch products dynamically and populate the database.
-* **Secure Authentication:** Supports secure authentication using **JWT** (JSON Web Tokens) and **bcrypt** for robust password hashing.
-* **Reporting & Analytics:** Includes **export functionality to CSV/PDF** and **real-time charts** for inventory tracking and sales performance analysis.
-
 ## Admin Features
 
 ### Product Management:
@@ -84,7 +74,59 @@ This project is a **full-stack e-commerce inventory and order management system*
 * **Utilities & Others:** `body-parser`, `cors`, `dotenv`, `json2csv`, `pdfkit`, `nodemon`
 * **External Integration:** DummyJSON API
 
+## Setup & Installation
 
+### 1. Clone the Repository
+
+```
+git clone https://github.com/Khushi-Patel-code/E-Commerce-Inventory-Order-Management-System-Website
+cd E-Commerce-Inventory-Order-Management-System-Website
+git pull origin main
+```
+### 2. Install Dependencies
+
+Run the following commands to install all required packages:
+
+```
+npm install jsonwebtoken bcrypt axios
+npm install express mysql2 body-parser cors dotenv ejs chart.js
+npm install nodemon --save-dev
+npm install express-session json2csv pdfkit helmet express-validator multer connect
+```
+
+### 3. Setup Database
+
+* Make sure **MySQL Workbench** is open and run all provided **SQL files**.
+* Update your database connection details in `db/connection.js`.
+* Ensure `.env` file variables match your database configuration:
+    * `DB_HOST` → `localhost`
+    * `DB_USER` → `root`
+    * `DB_PASS` or `DB_PASSWORD` must match across `.env` and `connection.js`.
+    * **Important:** Do not include `#` in your MySQL password. If necessary, enclose the password in double quotes.
+
+### 4. Run the Application
+
+```
+npm run dev   # for development mode
+# OR
+npm start     # for production mode
+```
+
+### 5. Admin Login Setup
+
+There is no admin creation page. To create a new admin password:
+
+1.  Run the hash generation script:
+    ```bash
+    node generate-hash.js
+    ```
+2.  Copy the generated hash and update the admin user in your SQL file or directly in the database:
+    ```sql
+    UPDATE users
+    SET password_hash = 'paste-generated-hash-here'
+    WHERE email = 'jayden.mallari@example.com';
+    ```
+3.  Re-run the SQL scripts (if modifying the file) and log in with the plaintext password you set in `generate-hash.js`.
 ---
 ---
 ---
