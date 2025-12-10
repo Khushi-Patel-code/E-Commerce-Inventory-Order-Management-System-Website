@@ -124,7 +124,7 @@ There is no admin creation page. To create a new admin password:
     ```sql
     UPDATE users
     SET password_hash = 'paste-generated-hash-here'
-    WHERE email = 'jayden.mallari@example.com';
+    WHERE email = 'khushi.patel@example.com';
     ```
 3.  Re-run the SQL scripts (if modifying the file) and log in with the plaintext password you set in `generate-hash.js`.
 ---
