@@ -310,3 +310,10 @@ There is no admin creation page. To create a new admin password:
     <td><img src="Screenshots/Ordrer history.png" width="500"/></td>
   </tr>
 </table>
+
+
+## Acknowledgements
+- This project was developed as part of an academic group assignment at Ontario Tech University for Data Management Systems Course.
+- External APIs: [DummyJSON](https://dummyjson.com/) for product data integration.
+- Libraries & Frameworks: Express, MySQL2, Axios, bcrypt, jsonwebtoken, EJS, Chart.js, Bootstrap, and other npm packages used in the project.
+- Special thanks to all group members: Khushi Patel, Prabhnoor Saini, Jayden Mallari and Rabab Raza for their contributions.
