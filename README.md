@@ -127,6 +127,34 @@ There is no admin creation page. To create a new admin password:
     WHERE email = 'khushi.patel@example.com';
     ```
 3.  Re-run the SQL scripts (if modifying the file) and log in with the plaintext password you set in `generate-hash.js`.
+## Usage
+
+### 1. Access the Website
+
+* Open your browser and navigate to the local server (default: `http://localhost:3000`).
+* **Note:** Use **separate browsers** or **incognito mode** for admin and customer testing to avoid JWT session conflicts.
+
+### 2. Admin Panel
+
+* Log in using the admin credentials (set up via `generate-hash.js` as described in **Setup & Installation**).
+* **Manage** products, orders, and users.
+* **Fetch external products** via the integrated API.
+* **Generate reports** in CSV or PDF format using the export functionality.
+* **Monitor dashboard charts** for inventory and order statistics.
+
+### 3. Customer Panel
+
+* Register or log in with a customer account.
+* **Browse products** by category and search for specific items.
+* **Add products to cart** and place orders.
+* **View past orders** and order statuses.
+
+### 4. Additional Notes
+
+* Ensure the **database is running** before accessing the website.
+* Changes made in the admin panel (like adding products or categories) are **immediately reflected** on the customer side.
+* For testing purposes, **multiple customer accounts** can be created to simulate real-world usage.
+
 ---
 ---
 ---
