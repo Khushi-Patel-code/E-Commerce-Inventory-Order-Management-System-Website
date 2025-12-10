@@ -190,9 +190,6 @@ exports.addOrder = async (req, res) => {
   }
 };
 
-
-
-
 // Get products for a specific order
 exports.getOrderProducts = async (req, res) => {
   try {

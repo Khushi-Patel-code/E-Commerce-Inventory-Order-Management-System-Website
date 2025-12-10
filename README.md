@@ -1,3 +1,29 @@
+# E-Commerce Inventory & Order Management System
+
+## Overview
+
+This project is a **full-stack e-commerce inventory and order management system** that allows administrators to manage products, categories, and orders while providing customers with a seamless shopping experience.
+
+---
+
+## Key Features & Highlights
+
+* **Product and Category Management:** Admins can **add, edit, and delete products and categories**.
+* **Inventory Tracking:** Comprehensive tools to **track inventory** levels in real-time.
+* **Order Management:** Admins can **view detailed order reports** and manage the order lifecycle.
+* **Customer Experience:** Customers can **browse products, place orders, and view order history**.
+* **Dynamic Data Integration:** Integrates with an **external product API (DummyJSON)** to fetch products dynamically and populate the database.
+* **Secure Authentication:** Supports secure authentication using **JWT** (JSON Web Tokens) and **bcrypt** for robust password hashing.
+* **Reporting & Analytics:** Includes **export functionality to CSV/PDF** and **real-time charts** for inventory tracking and sales performance analysis.
+
+
+
+
+
+
+---
+---
+---
 **Install These first**
 
 `npm install jsonwebtoken`
