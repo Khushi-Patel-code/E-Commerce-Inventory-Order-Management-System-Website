@@ -45,8 +45,44 @@ This project is a **full-stack e-commerce inventory and order management system*
 * **Access Control:** **Role-based access** using **JWT** (JSON Web Tokens).
 * **Protection:** Prevent unauthorized access to sensitive admin pages.
 
+## Customer Features
 
+### User Registration & Login:
 
+* **Secure Registration:** Secure account creation with **hashed passwords**.
+* **Authentication:** Login with **JWT-based session management**.
+
+### Product Browsing:
+
+* **Filtering:** View products by category using the **filter functionality**.
+* **Details:** See product details including **price, description, and stock availability**.
+
+### Shopping Cart:
+
+* **Management:** Add products to cart.
+* **Editing:** Update quantity or remove items from the cart.
+
+### Order Placement:
+
+* **Ordering:** Place orders for selected products.
+* **History:** View **order history** and detailed order information.
+
+### Responsive UI:
+
+* **Navigation:** Easy-to-navigate product listings.
+* **UX/UI:** Interactive and **user-friendly front-end pages**.
+
+### Secure Experience:
+
+* **Authorization:** **Session and role-based security** prevents unauthorized access to admin features.
+
+## Technologies Used
+
+* **Frontend:** HTML, CSS, JavaScript, Bootstrap, Chart.js
+* **Backend:** Node.js, Express.js, `axios` (DummyJSON API requests), `jsonwebtoken` (JWT), `bcrypt`, `express-session`, `helmet`, `express-validator`, `multer`
+* **Database:** MySQL (`mysql2`)
+* **Utilities & Others:** `body-parser`, `cors`, `dotenv`, `json2csv`, `pdfkit`, `nodemon`
+* **External Integration:** DummyJSON API
 
 
 ---
