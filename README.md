@@ -283,17 +283,30 @@ There is no admin creation page. To create a new admin password:
 
 <img src="Screenshots/Login Page.png" alt="Login page">
 
-
-
+### Admin Side
 <table>
   <tr>
-    <td><img src="Screenshots/Admin dashboard.png" width="200"/></td>
-    <td><img src="Screenshots/Products.png" width="200"/></td>
-    <td><img src="Screenshots/ViewsDashboard.png" width="200"/></td>
+    <td><img src="Screenshots/Admin dashboard.png" width="500"/></td>
+    <td><img src="Screenshots/Products.png" width="500"/></td>
   </tr>
   <tr>
-    <td><img src="Screenshots/Orders.png" width="200"/></td>
-    <td><img src="Screenshots/Filter Orders.png" width="200"/></td>
-    <td><img src="Screenshots/Update Order.png" width="200"/></td>
+    <td><img src="Screenshots/ViewsDashboard.png" width="500"/></td>
+    <td><img src="Screenshots/Orders.png" width="500"/></td>
+  </tr>
+  <tr>
+    <td><img src="Screenshots/Filter Orders.png" width="500"/></td>
+    <td><img src="Screenshots/Update Order.png" width="500"/></td>
+  </tr>
+</table>
+
+### Customer Side
+<table>
+  <tr>
+    <td><img src="Screenshots/Customer Dashboard.png" width="500"/></td>
+    <td><img src="Screenshots/Customer Products.png" width="500"/></td>
+  </tr>
+  <tr>
+    <td><img src="Screenshots/Cart.png" width="500"/></td>
+    <td><img src="Screenshots/Ordrer history.png" width="500"/></td>
   </tr>
 </table>
