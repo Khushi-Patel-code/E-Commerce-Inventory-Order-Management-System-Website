@@ -181,7 +181,7 @@ There is no admin creation page. To create a new admin password:
 }
 ```
 
-## Repository Structure
+## 📂 Repository Structure
 ```
 .
 ├── README.md
