@@ -311,7 +311,6 @@ There is no admin creation page. To create a new admin password:
   </tr>
 </table>
 
-
 ## Acknowledgements
 - This project was developed as part of an academic group assignment at Ontario Tech University for Data Management Systems Course.
 - External APIs: [DummyJSON](https://dummyjson.com/) for product data integration.
