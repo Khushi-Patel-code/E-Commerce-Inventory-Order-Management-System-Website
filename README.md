@@ -279,7 +279,7 @@ There is no admin creation page. To create a new admin password:
     └── warehouseValidator.js
 ```
 
-## Screenshots and UI
+## 📸 Screenshots and UI
 
 <img src="Screenshots/Login Page.png" alt="Login page">
 
