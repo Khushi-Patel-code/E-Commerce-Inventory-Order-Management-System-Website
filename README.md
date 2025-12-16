@@ -1,6 +1,6 @@
 # 🛒 E-Commerce Inventory & Order Management System
 
-## Overview
+## 🧩 Overview
 
 This project is a **full-stack e-commerce inventory and order management system** that allows administrators to manage products, Users, and orders while providing customers with a seamless shopping experience.
 
