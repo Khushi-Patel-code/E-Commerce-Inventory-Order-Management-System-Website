@@ -71,7 +71,6 @@ app.get('/api/ping', async (req, res) => {
     res.status(500).json({ success: false, error: 'DB ping failed' });
   }
 });
-
 // fallback for any other API routes
 app.use('/api', (req, res) => {
   res.status(404).json({ success: false, message: 'Unknown API endpoint' });
