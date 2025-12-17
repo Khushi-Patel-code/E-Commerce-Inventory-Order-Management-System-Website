@@ -114,7 +114,6 @@
         // Ensure export buttons are visible once a view name is set
         document.getElementById('export-buttons').classList.remove('d-none');
 
-
         try {
             // 3. Call the backend API to execute the SQL View query
             const res = await fetch(`${API_BASE}/${viewName}`);
