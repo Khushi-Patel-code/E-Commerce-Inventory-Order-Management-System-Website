@@ -223,7 +223,6 @@ exports.exportProductsPDF = async (req, res) => {
       if (y > 750) {
         doc.addPage();
         y = 100;
-        
         // redraw header
         doc.rect(x, y, colWidths.reduce((a, b) => a + b), 30).fill("#f0f0f0");
         doc.fillColor("black").font("Helvetica-Bold").fontSize(10);
