@@ -124,7 +124,7 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
-// Delete a product
+// Delete A Product
 exports.deleteProduct = async (req, res) => {
   
   const { id } = req.params;
@@ -143,7 +143,7 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-// Export Products as CSV
+// Export Products As CSV
 exports.exportProductsCSV = async (req, res) => {
   try {
     const [results] = await pool.query(`
