@@ -1,6 +1,5 @@
 const axios = require("axios");
 const pool = require("../db/connection");
-
 exports.fetchAndSaveExternalProducts = async (req, res) => {
   try {
     // 1. Fetch from DummyJSON API
