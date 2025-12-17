@@ -74,6 +74,7 @@ This project is a **full-stack e-commerce inventory and order management system*
 * **Utilities & Others:** `body-parser`, `cors`, `dotenv`, `json2csv`, `pdfkit`, `nodemon`
 * **External Integration:** DummyJSON API
 
+
 ## ⚙️ Setup & Installation
 
 ### 1. Clone the Repository
