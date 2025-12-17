@@ -53,4 +53,5 @@ exports.fetchAndSaveExternalProducts = async (req, res) => {
     console.error("External API error:", err);
     res.status(500).json({ error: "Failed to fetch external products" });
   }
+  
 };
