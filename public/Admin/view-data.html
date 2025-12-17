@@ -77,10 +77,8 @@
         return name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
     
-    /**
-     * Handles the click event for CSV and PDF exports.
-     * @param {string} format - 'csv' or 'pdf'.
-     */
+    //Handles the click event for CSV and PDF exports.
+     
     function handleExport(format) {
         if (!currentViewName) {
             alert('Error: Cannot export. View name not loaded.');
