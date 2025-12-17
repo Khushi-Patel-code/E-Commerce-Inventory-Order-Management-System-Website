@@ -43,7 +43,6 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-
 // Get single product by ID
 exports.getProductById = async (req, res) => {
   const { id } = req.params;
