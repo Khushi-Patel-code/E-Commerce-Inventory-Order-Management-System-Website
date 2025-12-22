@@ -173,6 +173,7 @@ There is no admin creation page. To create a new admin password:
 | :--- | :--- | :--- | :--- |
 | `GET` | `/external-products/fetch` | Fetch products from **DummyJSON API** and save them into the local database. Automatically creates categories if they don’t exist and skips duplicates based on SKU. | Admin only |
 
+
 #### Example Success Response:
 
 ```json
