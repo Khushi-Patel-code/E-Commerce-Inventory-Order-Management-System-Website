@@ -316,3 +316,4 @@ There is no admin creation page. To create a new admin password:
 - External APIs: [DummyJSON](https://dummyjson.com/) for product data integration.
 - Libraries & Frameworks: Express, MySQL2, Axios, bcrypt, jsonwebtoken, EJS, Chart.js, Bootstrap, and other npm packages used in the project.
 - Special thanks to all group members: Khushi Patel, Prabhnoor Saini, Jayden Mallari and Rabab Raza for their contributions.
+- 
