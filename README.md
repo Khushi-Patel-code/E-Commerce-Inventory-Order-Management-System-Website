@@ -104,7 +104,7 @@ npm install express-session json2csv pdfkit helmet express-validator multer conn
     * `DB_PASS` or `DB_PASSWORD` must match across `.env` and `connection.js`.
     * **Important:** Do not include `#` in your MySQL password. If necessary, enclose the password in double quotes.
 
-### 4. Run the Application
+## 4. Run the Application
 
 ```
 npm run dev   # for development mode
