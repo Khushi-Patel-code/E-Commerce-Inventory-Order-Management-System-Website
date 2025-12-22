@@ -77,7 +77,6 @@ This project is a **full-stack e-commerce inventory and order management system*
 ## ⚙️ Setup & Installation
 
 
-
 ### 1. Clone the Repository
 
 ```
