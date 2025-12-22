@@ -157,6 +157,7 @@ There is no admin creation page. To create a new admin password:
 
 ## API Endpoints
 
+
 ### Products
 
 | Method | Endpoint | Description | Access |
