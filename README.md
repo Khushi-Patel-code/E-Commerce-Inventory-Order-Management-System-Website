@@ -302,7 +302,7 @@ There is no admin creation page. To create a new admin password:
 ### Customer Side
 <table>
   <tr>
-    <td><img src="Screenshots/Customer Dashboard.png" width="500"/></td>
+    <td><img src="Screenshots/Customer Dashboard.png" width="200"/></td>
     <td><img src="Screenshots/Customer Products.png" width="500"/></td>
   </tr>
   <tr>
