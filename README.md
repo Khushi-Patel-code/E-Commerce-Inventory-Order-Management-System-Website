@@ -156,6 +156,7 @@ There is no admin creation page. To create a new admin password:
 * For testing purposes, **multiple customer accounts** can be created to simulate real-world usage.
 
 ## API Endpoints
+
 ### Products
 
 | Method | Endpoint | Description | Access |
