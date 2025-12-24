@@ -180,7 +180,6 @@ There is no admin creation page. To create a new admin password:
   "message": "Successfully inserted 20 external products."
 }
 ```
-
 ## 📂 Repository Structure
 ```
 .
