@@ -144,7 +144,6 @@ There is no admin creation page. To create a new admin password:
 
 ### 3. Customer Panel
 
-
 * Register or log in with a customer account.
 * **Browse products** by category and search for specific items.
 * **Add products to cart** and place orders.
