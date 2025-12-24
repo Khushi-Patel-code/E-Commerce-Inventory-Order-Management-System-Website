@@ -114,6 +114,7 @@ npm start     # for production mode
 
 ### 5. Admin Login Setup
 
+
 There is no admin creation page. To create a new admin password:
 
 1.  Run the hash generation script:
